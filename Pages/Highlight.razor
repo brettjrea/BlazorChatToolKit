@@ -1,0 +1,30 @@
+@page "/highlight"
+@inject IJSRuntime JsRunTime
+
+
+<h1>Highlight</h1>
+<div>
+    Followed guide from <a href="@("https://github.com/Timmoth/blazor-npm-guide/tree/main")">Timmoth/blazor-npm-guide</a>
+</div>
+<div>
+   Shows how to use a npm package in a Blazor project.
+</div>
+
+<pre class="mt-5">
+<code>import { highlight } from './highlight_lib';
+
+export function Highlight() {
+    return highlight();
+}</code></pre>
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRunTime.InvokeAsync<string>("jslib.Highlight");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -1,0 +1,42 @@
+﻿@page "/todo"
+
+<h3>Todo</h3>
+<div>
+    Got from a guide online a while ago, I think I added the localstorage will update if possible.
+</div>
+<input class="mt-5" @bind="newTodoItem" placeholder="Enter a Todo" />
+<button type="button" @onclick="Save">Save</button>
+
+@if (todoList.Count > 0)
+{
+    <ul>
+        @foreach (TodoItem todo in todoList)
+        {
+            <li>
+                <input type="checkbox" @bind="todo.IsComplete" />
+
+                <span style="@(todo.IsComplete ? "text-decoration: line-through" : "")">@todo.Title</span>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<TodoItem> todoList = new List<TodoItem>();
+    private string newTodoItem { get; set; } = "";
+
+    private void Save()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodoItem))
+        {
+            todoList.Add(new TodoItem { Title = newTodoItem, IsComplete = false });
+            newTodoItem = string.Empty;
+        }
+    }
+
+    public class TodoItem
+    {
+        public string Title { get; set; }
+        public bool IsComplete { get; set; }
+    }
+}

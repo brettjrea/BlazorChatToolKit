@@ -1,0 +1,138 @@
+﻿@page "/conversation"
+@using BlazorChatToolKit.Shared
+@using BlazorChatToolKit.Shared.EncryptProviders
+@using Blazored.LocalStorage
+@inject ISyncLocalStorageService localStorage
+@inject IJSRuntime Js
+<PageTitle>MyBlazorChat</PageTitle>
+
+<div class="h1 mb-4 text-center">
+   BlazorChatToolKit 
+</div>
+<div style="line-height:40px;" class="h5 mb-4 text-center">
+   Demonstrates encrypted and decrypted key storage in Local Storage and the use of GPT-3 to generate a text response, creates a message list.
+</div>
+<div class="container">
+    <div class="row">
+        <div>
+            <div>
+
+                <div class="form-group h5 mb-4 text-center">
+                    <label>Encrypt and Store API Key in Local Storage:</label>
+                    <input type="text" class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" @bind-value="@OriginalText" placeholder="Paste your API Key here" />
+                </div>
+
+                <div class="form-group text-center">
+                    <button class="btn btn-primary mb-4 px-2" style="max-width:200px;" @onclick="@EncryptandStore" >Encrypt and Store</button>&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center text-center">
+    <div id="conversation-container" class="message-container">
+        @foreach (var message in Messages)
+        {
+            <div class="@(message.IsUserMessage ? "user-message" : "gpt-response")">
+                <span>@message.Content</span>
+            </div>
+        }
+    </div>
+</div>
+<div class="form-group text-center">
+    <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="@message"
+           placeholder="Type your message here" />
+    <button class="btn btn-success mb-4 px-2" style="max-width:200px;" @onclick="@GetResponseFromGPT3">
+        Decrypt and Submit        
+    </button>
+</div>
+
+@code {
+    [Inject] IEncryptProvider? EncryptProvider { get; set; }
+    [Inject] ILocalStorageService? LocalStorage { get; set; }
+
+    public string OriginalText { get; set; } = "";
+    public string EncryptedText { get; set; } = "";
+    private string APIKey = "";
+    private string message = "";
+    private string generatedText = "";
+    private List<Message> Messages { get; set; } = new List<Message>();
+
+    async Task EncryptandStore()
+    {
+        EncryptedText = await EncryptProvider.Encrypt(OriginalText);
+        await Js.InvokeVoidAsync("alert", "Encrypt Complete");
+        await LocalStorage.SetItemAsync<string>("SampleKey", EncryptedText);
+        await Js.InvokeVoidAsync("alert", "Information added to store");
+        OriginalText = "";
+        await Js.InvokeVoidAsync("alert", "Cleared");
+    }
+
+    async Task ReadandDecrypt()
+    {
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
+        await Js.InvokeVoidAsync("alert", "Store Read Complete");
+        OriginalText = await EncryptProvider.Decrypt<string>(EncryptedText);
+        await Js.InvokeVoidAsync("alert", "Decrypt Complete");
+
+    }
+
+    public class Message
+    {
+        public string Content { get; set; }
+        public bool IsUserMessage { get; set; }
+    }
+
+    public static class GPT3Response
+    {
+        public static string Response { get; set; } = "";
+    }
+    private async Task GetResponseFromGPT3()
+    {
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");  //RETRIEVES FROM HERE
+        await Js.InvokeVoidAsync("alert", "Store Read Complete");
+        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText); //DECRYPTS HERE
+        await Js.InvokeVoidAsync("alert", "Decrypt Complete");     
+  
+
+        generatedText = "Finding Answer...";
+        try
+        {
+            string apiKey = APIKey;     //PLACES HERE
+            string answer = string.Empty;
+            var openai = new OpenAIAPI(apiKey);
+            CompletionRequest completion = new CompletionRequest();
+            completion.Prompt = message;
+            completion.Model = Model.DavinciText;
+            completion.MaxTokens = 4000;
+            var result = await openai.Completions.CreateCompletionAsync(completion);
+
+            if (result != null)
+            {
+                foreach (var item in result.Completions)
+                {
+                    GPT3Response.Response = item.Text;
+                }
+                generatedText = GPT3Response.Response;
+                generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
+                // Add user message to the list
+                Messages.Add(new Message { Content = message, IsUserMessage = true });
+
+                // Add GPT response to the list
+                Messages.Add(new Message { Content = GPT3Response.Response, IsUserMessage = false });
+
+
+            }
+
+            StateHasChanged();
+            message = "";
+        }
+
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+    }
+}

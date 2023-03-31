@@ -1,0 +1,25 @@
+{
+  "name": "jslib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "highlight.js": "^11.7.0",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "babel-loader": "^9.1.2",
+    "css-loader": "^6.7.3",
+    "sass": "^1.60.0",
+    "sass-loader": "^13.2.2",
+    "style-loader": "^3.3.2"
+  }
+}

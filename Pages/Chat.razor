@@ -1,0 +1,108 @@
+﻿@page "/Chat"
+@using BlazorChatToolKit;
+@using Blazored.LocalStorage;
+@inject ISyncLocalStorageService localStorage
+
+<PageTitle>MyBlazorChat</PageTitle>
+
+<div class="h1 mb-4 text-center">
+   BlazorChatToolKit
+</div>
+<div style="line-height:40px;" class="h4 mb-4 text-center">
+    Added plain local storage to this example found at <a href="@("https://github.com/Yash-FStack/ChatGPT_Blazor/tree/master")">Yash-FStack/ChatGPT_Blazor</a>
+</div>
+
+
+<div class="form-group text-center">
+    <h5>Add API Key to local storage</h5>
+    <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="Name" placeholder="Enter a value" />
+    <div class="input-group-append">
+        <button class="btn btn-primary mb-4 px-2" style="max-width:200px;" @onclick="SaveName">Save</button>
+    </div>
+</div>
+
+
+<div class="form-group text-center">
+    <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="@message"
+           placeholder="Type your message here" />
+    <button class="btn btn-success mb-4 px-2" style="max-width:200px;" @onclick="@GetResponseFromGPT3">
+        Find
+        Answer
+    </button>
+</div>
+<div class="d-flex justify-content-center text-center">
+    <div style="min-width:600px; min-height:260px; max-width:700px;"
+         class="mt-2 container border border-1 rounded-2 p-3 text-center">
+        @((MarkupString)generatedText)
+    </div>
+</div>
+
+@code {
+    private string message = "";
+    private string generatedText = "";
+
+    private async Task GetResponseFromGPT3()
+    {
+        generatedText = "Finding Answer...";
+        try
+        {
+            string apiKey = @NameFromLocalStorage;     //APY KEY READ FROM LOCAL STORAGE NOT ENCRYPTED
+            string answer = string.Empty;
+            var openai = new OpenAIAPI(apiKey);
+            CompletionRequest completion = new CompletionRequest();
+            completion.Prompt = message;
+            completion.Model = Model.DavinciText;
+            completion.MaxTokens = 4000;
+            var result = await openai.Completions.CreateCompletionAsync(completion);
+
+            if (result != null)
+            {
+                foreach (var item in result.Completions)
+                {
+                    GPT3Response.Response = item.Text;
+                }
+                generatedText = GPT3Response.Response;
+                generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
+
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public static class GPT3Response
+    {
+        public static string Response { get; set; } = "";
+    }
+
+    string Name { get; set; } = "";
+    void SaveName()
+    {
+        Console.WriteLine(Name);
+        localStorage.SetItem("name", Name);
+        GetNameFromLocalStorage();
+        Name = "";
+    }
+    string NameFromLocalStorage { get; set; } = "Nothing Saved";
+    void GetNameFromLocalStorage()
+    {
+        try
+        {
+            NameFromLocalStorage = localStorage.GetItem<string>("name");
+
+            if (string.IsNullOrEmpty(NameFromLocalStorage))
+            {
+                NameFromLocalStorage = "Nothing Saved";
+            }
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("error reading 'name'");
+        }
+    }
+}
+
