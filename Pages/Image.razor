@@ -1,0 +1,86 @@
+@page "/Image"
+@using DALL_E_ImageGeneration;
+@using Blazored.LocalStorage;
+@inject ISyncLocalStorageService localStorage
+
+<PageTitle>MyDALLEImage</PageTitle>
+
+<div class="h1 mb-4 text-center">
+    DALL-E Image Generation
+</div>
+
+<div class="form-group text-center">
+    <h5>Add API Key to local storage</h5>
+    <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="Name" placeholder="Enter a value" />
+    <div class="input-group-append">
+        <button class="btn btn-primary mb-4 px-2" style="max-width:200px;" @onclick="SaveName">Save</button>
+    </div>
+</div>
+
+<div class="form-group text-center">
+    <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="@prompt"
+           placeholder="Type your image prompt here" />
+    <button class="btn btn-success mb-4 px-2" style="max-width:200px;" @onclick="@GenerateImageFromDALLE">
+        Generate
+        Image
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(imageUrl))
+{
+    <div class="d-flex justify-content-center">
+        <img src="@imageUrl" alt="Generated Image" class="img-fluid" />
+    </div>
+}
+
+@code {
+    private string prompt = "";
+    private string imageUrl = "";
+
+    private async Task GenerateImageFromDALLE()
+    {
+        try
+        {
+            string apiKey = @NameFromLocalStorage;
+            var api = new DALL_E_ImageGenerationAPI(apiKey);
+            var result = await api.Images.CreateImageAsync(new ImageGenerationRequest(prompt, 1, ImageSize._512));
+
+            if (result != null && result.Data.Count > 0)
+            {
+                imageUrl = result.Data[0].Url;
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error generating image: " + ex.Message);
+        }
+    }
+
+    string Name { get; set; } = "";
+    void SaveName()
+    {
+        Console.WriteLine(Name);
+        localStorage.SetItem("name", Name);
+        GetNameFromLocalStorage();
+        Name = "";
+    }
+    string NameFromLocalStorage { get; set; } = "Nothing Saved";
+    void GetNameFromLocalStorage()
+    {
+        try
+        {
+            NameFromLocalStorage = localStorage.GetItem<string>("name");
+
+            if (string.IsNullOrEmpty(NameFromLocalStorage))
+            {
+                NameFromLocalStorage = "Nothing Saved";
+            }
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("error reading 'name'");
+        }
+    }
+}
