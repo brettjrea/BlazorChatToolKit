@@ -1,6 +1,6 @@
 @page "/Image"
-@using BlazorChatToolKit;
-@using Blazored.LocalStorage;
+@using System.Net.Http.Json
+@inject HttpClient Http
 @inject ISyncLocalStorageService localStorage
 
 <PageTitle>MyDALLEImage</PageTitle>
@@ -42,11 +42,20 @@
         try
         {
             string apiKey = @NameFromLocalStorage;
-            var api = new DALL_E_ImageGenerationAPI(apiKey);
-            var result = await api.Images.CreateImageAsync(new ImageGenerationRequest(prompt, 1, ImageSize._512));
-
-            if (result != null && result.Data.Count > 0)
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/images/generations");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+            request.Content = JsonContent.Create(new
             {
+                prompt,
+                n = 1,
+                size = "512x512",
+            });
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ImageGenerationResult>();
                 imageUrl = result.Data[0].Url;
             }
 
@@ -82,5 +91,15 @@
         {
             Console.WriteLine("error reading 'name'");
         }
+    }
+
+    public class ImageGenerationResult
+    {
+        public List<ImageData> Data { get; set; }
+    }
+
+    public class ImageData
+    {
+        public string Url { get; set; }
     }
 }
