@@ -2,6 +2,9 @@
 @using BlazorChatToolKit.Shared
 @using BlazorChatToolKit.Shared.EncryptProviders
 @using Blazored.LocalStorage
+@using OpenAI_API;
+@using OpenAI_API.Images;
+
 @inject ISyncLocalStorageService localStorage
 @inject IJSRuntime Js
 <PageTitle>MyBlazorChat</PageTitle>
@@ -41,12 +44,23 @@
     </div>
 </div>
 <div class="form-group text-center">
+
+
+
     <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="@message"
            placeholder="Type your message here" />
     <button class="btn btn-success mb-4 px-2" style="max-width:200px;" @onclick="@GetResponseFromGPT3">
-        Decrypt and Submit        
+        Decrypt and Submit
     </button>
+    <div class="form-check my-4 text-center py-2 m-auto" style="max-width:600px;">
+        <label class="form-check-label" for="generateImageCheckbox" style="display:flex; align-items:center;">
+            <span>Generate Image</span>
+            <input class="form-check-input mx-2" type="checkbox" value="" id="generateImageCheckbox" @bind="generateImage" />
+        </label>
+    </div>
 </div>
+
+
 
 @code {
     [Inject] IEncryptProvider? EncryptProvider { get; set; }
@@ -77,7 +91,7 @@
         await Js.InvokeVoidAsync("alert", "Decrypt Complete");
 
     }
-
+    private bool generateImage = false;
     public class Message
     {
         public string Content { get; set; }
@@ -87,6 +101,7 @@
     public static class GPT3Response
     {
         public static string Response { get; set; } = "";
+
     }
     private async Task GetResponseFromGPT3()
     {
@@ -95,6 +110,11 @@
         APIKey = await EncryptProvider.Decrypt<string>(EncryptedText); //DECRYPTS HERE
         await Js.InvokeVoidAsync("alert", "Decrypt Complete");     
   
+        if (generateImage)
+        {
+            await GetImageFromDALLE();
+        }
+        else
 
         generatedText = "Finding Answer...";
         try
@@ -134,5 +154,28 @@
             throw ex;
         }
 
+    }
+
+    private async Task GetImageFromDALLE()
+    {
+        string apiKey = APIKey;
+        var openai = new OpenAIAPI(apiKey);
+        var imageRequest = new ImageGenerationRequest(message, 1, ImageSize._512, "url"); // use "url" to represent ResponseFormat.Url
+        var imageResult = await openai.ImageGenerations.CreateImageAsync(imageRequest);
+
+        if (imageResult.Data != null && imageResult.Data.Count > 0)
+        {
+            generatedText = $"<img src=\"{imageResult.Data[0].Url}\"/>";
+            Messages.Add(new Message { Content = message, IsUserMessage = true });
+            Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+        }
+    
+
+
+    
+
+
+        StateHasChanged();
+        message = "";
     }
 }
