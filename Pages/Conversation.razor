@@ -4,6 +4,7 @@
 @using Blazored.LocalStorage
 @using OpenAI_API;
 @using OpenAI_API.Images;
+@using System.Net;
 
 @inject ISyncLocalStorageService localStorage
 @inject IJSRuntime Js
@@ -101,81 +102,117 @@
     public static class GPT3Response
     {
         public static string Response { get; set; } = "";
-
     }
+
     private async Task GetResponseFromGPT3()
     {
-        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");  //RETRIEVES FROM HERE
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
         await Js.InvokeVoidAsync("alert", "Store Read Complete");
-        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText); //DECRYPTS HERE
-        await Js.InvokeVoidAsync("alert", "Decrypt Complete");     
-  
+
+        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText);
+        await Js.InvokeVoidAsync("alert", "Decrypt Complete");
+
         if (generateImage)
         {
             await GetImageFromDALLE();
         }
         else
-
-        generatedText = "Finding Answer...";
-        try
         {
-            string apiKey = APIKey;     //PLACES HERE
-            string answer = string.Empty;
-            var openai = new OpenAIAPI(apiKey);
-            CompletionRequest completion = new CompletionRequest();
-            completion.Prompt = message;
-            completion.Model = Model.DavinciText;
-            completion.MaxTokens = 4000;
-            var result = await openai.Completions.CreateCompletionAsync(completion);
-
-            if (result != null)
+            generatedText = "Finding Answer...";
+            try
             {
-                foreach (var item in result.Completions)
+                string apiKey = APIKey;
+
+                var openai = new OpenAIAPI(apiKey);
+
+                CompletionRequest completion = new CompletionRequest();
+                completion.Prompt = message;
+
+                // Warning: The Model.DavinciText enum value has been deprecated
+                completion.Model = Model.DavinciText;
+
+                completion.MaxTokens = 4000;
+
+                var result = await openai.Completions.CreateCompletionAsync(completion);
+
+                if (result != null)
                 {
-                    GPT3Response.Response = item.Text;
+                    foreach (var item in result.Completions)
+                    {
+                        GPT3Response.Response = item.Text;
+                    }
+
+                    generatedText = GPT3Response.Response;
+                    generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
+
+                    // Add user message to the list
+                    Messages.Add(new Message { Content = message, IsUserMessage = true });
+
+                    // Add GPT response to the list
+                    Messages.Add(new Message { Content = GPT3Response.Response, IsUserMessage = false });
                 }
-                generatedText = GPT3Response.Response;
-                generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
-                // Add user message to the list
-                Messages.Add(new Message { Content = message, IsUserMessage = true });
 
-                // Add GPT response to the list
-                Messages.Add(new Message { Content = GPT3Response.Response, IsUserMessage = false });
-
-
+                StateHasChanged();
+                message = "";
             }
-
-            StateHasChanged();
-            message = "";
+            catch (HttpRequestException ex) when (ex.Message.Contains("insufficient_quota"))
+            {
+                generatedText = "You have exceeded your API limit. Please check your plan and billing details.";
+                            Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                generatedText = "You exceeded your current quota, please check your plan and billing details.";
+                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Forbidden)
+            {
+                generatedText = "Your API Key is invalid or has expired.";
+                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+            }
+            catch (HttpRequestException ex)
+            {
+                generatedText = "There was an error with the API request.";
+                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
-
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-
     }
+
 
     private async Task GetImageFromDALLE()
     {
-        string apiKey = APIKey;
-        var openai = new OpenAIAPI(apiKey);
-        var imageRequest = new ImageGenerationRequest(message, 1, ImageSize._512, "url"); // use "url" to represent ResponseFormat.Url
-        var imageResult = await openai.ImageGenerations.CreateImageAsync(imageRequest);
-
-        if (imageResult.Data != null && imageResult.Data.Count > 0)
+        try
         {
-            generatedText = $"<img src=\"{imageResult.Data[0].Url}\"/>";
-            Messages.Add(new Message { Content = message, IsUserMessage = true });
+            string apiKey = APIKey;
+            var openai = new OpenAIAPI(apiKey);
+            var imageRequest = new ImageGenerationRequest(message, 1, ImageSize._512, "url"); // use "url" to represent ResponseFormat.Url
+            var imageResult = await openai.ImageGenerations.CreateImageAsync(imageRequest);
+
+            if (imageResult.Data != null && imageResult.Data.Count > 0)
+            {
+                generatedText = $"<img src=\"{imageResult.Data[0].Url}\"/>";
+                Messages.Add(new Message { Content = message, IsUserMessage = true });
+                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+            }
+        }
+        catch (HttpRequestException ex) when (ex.Message.Contains("billing_hard_limit_reached"))
+        {
+            generatedText = "Oops! It looks like we've hit our billing limit. Please try again later.";
             Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
         }
-    
-
-
-    
-
+        catch (Exception ex)
+        {
+            generatedText = "Oops! Something went wrong. Please try again later.";
+            Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+        }
 
         StateHasChanged();
         message = "";
     }
+
+
 }
