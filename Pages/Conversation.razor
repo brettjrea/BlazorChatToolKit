@@ -8,7 +8,7 @@
 
 @inject ISyncLocalStorageService localStorage
 @inject IJSRuntime Js
-<PageTitle>MyBlazorChat</PageTitle>
+<PageTitle>BlazorChatToolKit</PageTitle>
 
 <div class="h1 mb-4 text-center">
     BlazorChatToolKit
@@ -46,12 +46,9 @@
 </div>
 
 <div class="form-group text-center">
-
     <div class="form-check d-inline-block w-33" style="max-width: 200px;">
-        <input class="form-check-input mx-2" type="radio" name="apiOption" id="generateImageRadio" @bind-value="@generateImage" @bind-value:event="onchange">
-        <label class="form-check-label" for="generateImageRadio" style="display:flex; align-items:center;">
-            <span>Generate Image</span>
-        </label>
+        <input class="form-check-input mx-2" type="radio" name="apiOption" value="chat" id="useChatRadio" checked="@(!generateImage && !useCompletions)">
+        <label class="form-check-label" for="useChatRadio">Chat API</label>
     </div>
     <div class="form-check d-inline-block w-33" style="max-width: 200px;">
         <input class="form-check-input mx-2" type="radio" name="apiOption" id="useCompletionsRadio" @bind-value="@useCompletions" @bind-value:event="onchange">
@@ -60,9 +57,13 @@
         </label>
     </div>
     <div class="form-check d-inline-block w-33" style="max-width: 200px;">
-        <input class="form-check-input mx-2" type="radio" name="apiOption" value="chat" id="useChatRadio" checked="@(!generateImage && !useCompletions)">
-        <label class="form-check-label" for="useChatRadio">Chat API</label>
+        <input class="form-check-input mx-2" type="radio" name="apiOption" id="generateImageRadio" @bind-value="@generateImage" @bind-value:event="onchange">
+        <label class="form-check-label" for="generateImageRadio" style="display:flex; align-items:center;">
+            <span>Generate Image</span>
+        </label>
     </div>
+
+
 
 
 
