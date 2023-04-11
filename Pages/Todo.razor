@@ -14,7 +14,7 @@
     Blazor Todo List
 </div>
 <div class="h5 mb-4 text-center">
-    Demonstrates encrypted and decrypted todo storage in Local Storage and the use of GPT-4 to generate todo suggestions.
+    Demonstrates encrypted and decrypted todo storage in Local Storage and the use of GPT to generate todo suggestions.
 </div>
 <div class="container">
     <div class="row">
@@ -26,7 +26,7 @@
                         <input @oninput="GetTodoSuggestions" type="text" class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" @bind="@TodoContent" placeholder="Add your todo here" />
                         @if (Suggestions.Any())
                         {
-                            <div class="dropdown-menu text-center clear" aria-labelledby="dropdownMenuButton" style="display:block; max-height:200px; overflow-y:auto; position: relative;">
+                            <div class="dropdown-menu my-4 text-center py-2 m-auto" aria-labelledby="dropdownMenuButton" style="display:block; max-width:600px; overflow-y:auto; position: relative;">
                                 @foreach (var suggestion in Suggestions)
                                 {
                                     <a class="dropdown-item text-center clear" href="javascript:void(0)" @onclick="() => SelectSuggestion(suggestion)">@suggestion</a>
@@ -67,6 +67,7 @@
     public string EncryptedText { get; set; } = "";
     private string APIKey = "";
     public string TodoContent { get; set; } = "";
+    private List<string> TodoKeys { get; set; }
     private List<TodoItem> Todos { get; set; } = new List<TodoItem>();
     private List<string> Suggestions { get; set; } = new List<string>();
 
@@ -81,6 +82,13 @@
         await LocalStorage.SetItemAsync<string>(TodoContent, encryptedTodo);
         var decryptedTodo = await EncryptProvider.Decrypt<string>(encryptedTodo);
         Todos.Add(new TodoItem { Content = decryptedTodo });
+
+        // Save the todo key to the list of keys
+        TodoKeys.Add(TodoContent);
+        var todoKeysJson = JsonSerializer.Serialize(TodoKeys);
+        var encryptedKeys = await EncryptProvider.Encrypt(todoKeysJson);
+        await LocalStorage.SetItemAsync<string>("TodoKeys", encryptedKeys);
+
         TodoContent = "";
     }
 
@@ -88,14 +96,21 @@
     {
         try
         {
-            EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
-            var todoKeysJson = await EncryptProvider.Decrypt<string>(EncryptedText);
-            var todoKeys = JsonSerializer.Deserialize<List<string>>(todoKeysJson);
-            foreach (var key in todoKeys)
+            EncryptedText = await LocalStorage.GetItemAsync<string>("TodoKeys");
+            if (!string.IsNullOrEmpty(EncryptedText))
             {
-                var encryptedTodo = await LocalStorage.GetItemAsync<string>(key);
-                var decryptedTodo = await EncryptProvider.Decrypt<string>(encryptedTodo);
-                Todos.Add(new TodoItem { Content = decryptedTodo });
+                var todoKeysJson = await EncryptProvider.Decrypt<string>(EncryptedText);
+                TodoKeys = JsonSerializer.Deserialize<List<string>>(todoKeysJson);
+                foreach (var key in TodoKeys)
+                {
+                    var encryptedTodo = await LocalStorage.GetItemAsync<string>(key);
+                    var decryptedTodo = await EncryptProvider.Decrypt<string>(encryptedTodo);
+                    Todos.Add(new TodoItem { Content = decryptedTodo });
+                }
+            }
+            else
+            {
+                TodoKeys = new List<string>();
             }
         }
         catch (Exception ex)
@@ -103,6 +118,7 @@
             Console.WriteLine("Error initializing component: " + ex.Message);
         }
     }
+
 
 
     private async Task GetTodoSuggestions(ChangeEventArgs e)
@@ -128,23 +144,36 @@
         {
             var openai = new OpenAIAPI(APIKey);
             CompletionRequest completion = new CompletionRequest();
-            completion.Prompt = $@"I need suggestions for a todo item related to {prompt}. Please provide one task per line based on the following examples:
-            Input: 'get', Task: 'eggs'
-            Input: 'get', Task: 'milk'
-            Input: 'get', Task: 'dog food'
-            Input: 'pay', Task: 'bills'
-            Input: 'pay', Task: 'credit card'
-            Input: 'pay', Task: 'mortgage'
-            Input: 'clean', Task: 'kitchen'
-            Input: 'clean', Task: 'bathroom'
-            Input: 'clean', Task: 'living room'
-            Input: 'call', Task: 'mom'
-            Input: 'call', Task: 'dad'
-            Input: 'call', Task: 'friend'
-            Input: 'organize', Task: 'closet'
-            Input: 'organize', Task: 'desk'
-            Input: 'organize', Task: 'garage'
-            For the input {prompt}, provide one task per line:";
+            completion.Prompt = $@"Based on the keyword '{prompt}', provide 5 diverse and practical todo tasks that start with the given keyword. Consider a wide range of tasks related to the input, from daily chores to personal goals. Please provide the tasks with each task on a separate line.
+
+            Examples:
+            Input: 'exercise'
+            Tasks:
+            Exercise for 30 minutes
+            Exercise by attending a yoga class
+            Exercise with a new workout video
+            Exercise by swimming laps at a local pool
+            Exercise with a strength training session
+
+            Input: 'read'
+            Tasks:
+            Read a chapter of a novel
+            Read a news article
+            Read a scientific research paper
+            Read a non-fiction book
+            Read a magazine
+
+            Input: 'cook'
+            Tasks:
+            Cook a healthy dinner
+            Cook a new recipe
+            Cook a meal for a friend
+            Cook a batch of cookies
+            Cook a meal to freeze for later
+
+            Now, for the input '{prompt}', please provide 5 diverse and practical tasks, with each task starting with the given keyword and presented on a separate line:";
+
+
 
 
 
