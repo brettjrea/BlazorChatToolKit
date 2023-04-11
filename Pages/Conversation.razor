@@ -38,36 +38,47 @@
     <div id="conversation-container" class="message-container">
         @foreach (var message in Messages)
         {
-            <div class="@(message.IsUserMessage ? "user-message" : "gpt-response")">
-                <span>@message.Content</span>
-            </div>
+            @if (message.IsUserMessage)
+            {
+                <div class="user-message">
+                    <span>@message.Content</span>
+                </div>
+            }
+            else
+            {
+                <div class="gpt-response">
+                    @if (message.Content.Contains("<img"))
+                    {
+                        <div>@(new MarkupString(message.Content))</div>
+                    }
+                    else
+                    {
+                        <span>@message.Content</span>
+                    }
+                </div>
+            }
         }
     </div>
 </div>
 
+
 <div class="form-group text-center">
     <div class="form-check d-inline-block w-33" style="max-width: 200px;">
-        <input class="form-check-input mx-2" type="radio" name="apiOption" value="chat" id="useChatRadio" checked="@(!generateImage && !useCompletions)">
+        <input class="form-check-input mx-2" type="radio" name="apiOption" value="chat" id="useChatRadio" checked="@(!generateImage && !useCompletions)" @onclick="@(() => { useCompletions = false; generateImage = false; })">
         <label class="form-check-label" for="useChatRadio">Chat API</label>
     </div>
     <div class="form-check d-inline-block w-33" style="max-width: 200px;">
-        <input class="form-check-input mx-2" type="radio" name="apiOption" id="useCompletionsRadio" @bind-value="@useCompletions" @bind-value:event="onchange">
+        <input class="form-check-input mx-2" type="radio" name="apiOption" id="useCompletionsRadio" checked="@useCompletions" @onclick="@(() => { useCompletions = true; generateImage = false; })">
         <label class="form-check-label" for="useCompletionsRadio" style="display:flex; align-items:center;">
             <span>Use Completions API</span>
         </label>
     </div>
     <div class="form-check d-inline-block w-33" style="max-width: 200px;">
-        <input class="form-check-input mx-2" type="radio" name="apiOption" id="generateImageRadio" @bind-value="@generateImage" @bind-value:event="onchange">
+        <input class="form-check-input mx-2" type="radio" name="apiOption" id="generateImageRadio" checked="@generateImage" @onclick="@(() => { generateImage = true; useCompletions = false; })">
         <label class="form-check-label" for="generateImageRadio" style="display:flex; align-items:center;">
             <span>Generate Image</span>
         </label>
     </div>
-
-
-
-
-
-
 
 
     <input class="form-control my-4 text-center py-2 m-auto" style="max-width:600px;" type="text" @bind="@message"
@@ -75,9 +86,8 @@
     <button class="btn btn-success mb-4 px-2" style="max-width:200px;" @onclick="@GetResponseFromGPT3">
         Decrypt and Submit
     </button>
-
-
 </div>
+
 
 
 
@@ -95,30 +105,25 @@
     async Task EncryptandStore()
     {
         EncryptedText = await EncryptProvider.Encrypt(OriginalText);
-        await Js.InvokeVoidAsync("alert", "Encrypt Complete");
         await LocalStorage.SetItemAsync<string>("SampleKey", EncryptedText);
-        await Js.InvokeVoidAsync("alert", "Information added to store");
-        OriginalText = "";
-        await Js.InvokeVoidAsync("alert", "Cleared");
+        OriginalText = "";    
     }
 
     async Task ReadandDecrypt()
     {
-        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
-        await Js.InvokeVoidAsync("alert", "Store Read Complete");
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey"); 
         OriginalText = await EncryptProvider.Decrypt<string>(EncryptedText);
-        await Js.InvokeVoidAsync("alert", "Decrypt Complete");
-
+     
     }
 
     private bool generateImage = false;
     private bool useCompletions = false;
 
-
     public class Message
     {
-        public string Content { get; set; }
-        public bool IsUserMessage { get; set; }
+        public string Content { get; set; } = "";
+        public bool IsUserMessage { get; set; } = false;
+        public bool IsImage { get; set; }  // add this property
     }
 
     public static class GPT3Response
@@ -128,122 +133,40 @@
 
     private async Task GetResponseFromGPT3()
     {
-        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
-        await Js.InvokeVoidAsync("alert", "Store Read Complete");
-
-        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText);
-        await Js.InvokeVoidAsync("alert", "Decrypt Complete");
-
         if (generateImage)
         {
             await GetImageFromDALLE();
         }
+        else if (!generateImage && !useCompletions)
+        {
+            await GetChat();
+        }
         else
         {
-            generatedText = "Finding Answer...";
-            try
-            {
-                string apiKey = APIKey;
-                var openai = new OpenAIAPI(apiKey);
-                if (useCompletions)
-                {
-                    CompletionRequest completion = new CompletionRequest();
-                    completion.Prompt = message;
-                    completion.Model = "text-davinci-002";
-                    completion.MaxTokens = 4000;
-
-                    var result = await openai.Completions.CreateCompletionAsync(completion);
-
-                    if (result != null)
-                    {
-                        GPT3Response.Response = result.ToString();
-
-                        generatedText = GPT3Response.Response;
-                        generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
-                    }
-                }
-                else
-                {
-                    var chatRequest = new ChatRequest()
-                        {
-                            Messages = new List<ChatMessage>()
-        {
-            new ChatMessage() { Role = ChatMessageRole.System, Content = "You are a helpful assistant." },
-            new ChatMessage() { Role = ChatMessageRole.User, Content = message },
-        },
-                            Model = "text-davinci-002",
-                            MaxTokens = 4000,
-                        };
-
-                    var chatResult = await openai.Chat.CreateChatCompletionAsync(chatRequest);
-
-                    if (chatResult != null && chatResult.Choices.Count > 0)
-                    {
-                        var assistantMessage = chatResult.Choices[0].Message;
-
-                        if (assistantMessage != null)
-                        {
-                            GPT3Response.Response = assistantMessage.Content;
-                            generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
-                        }
-                    }
-                }
-
-
-                // Add user message to the list
-                Messages.Add(new Message { Content = message, IsUserMessage = true });
-
-                // Add GPT response to the list
-                Messages.Add(new Message { Content = GPT3Response.Response, IsUserMessage = false });
-
-                StateHasChanged();
-                message = "";
-            }
-            catch (HttpRequestException ex) when (ex.Message.Contains("insufficient_quota"))
-            {
-                generatedText = "You have exceeded your API limit. Please check your plan and billing details.";
-                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
-            {
-                generatedText = "You exceeded your current quota, please check your plan and billing details.";
-                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Forbidden)
-            {
-                generatedText = "Your API Key is invalid or has expired.";
-                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
-            }
-            catch (HttpRequestException ex)
-            {
-                generatedText = "There was an error with the API request.";
-                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            await GetCompletions();
         }
     }
 
 
-
-
     private async Task GetImageFromDALLE()
     {
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
+        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText);
         try
         {
             string apiKey = APIKey;
             var openai = new OpenAIAPI(apiKey);
-            var imageRequest = new ImageGenerationRequest(message, 1, ImageSize._512, "url"); // use "url" to represent ResponseFormat.Url
+            var imageRequest = new ImageGenerationRequest(message, 1, ImageSize._512, "url");
             var imageResult = await openai.ImageGenerations.CreateImageAsync(imageRequest);
 
             if (imageResult.Data != null && imageResult.Data.Count > 0)
             {
-                generatedText = $"<img src=\"{imageResult.Data[0].Url}\"/>";
+                var imageUrl = imageResult.Data[0].Url.Replace("\\", "");
+                generatedText = $"<img src=\"{imageUrl}\"/>";
                 Messages.Add(new Message { Content = message, IsUserMessage = true });
-                Messages.Add(new Message { Content = generatedText, IsUserMessage = false });
+                Messages.Add(new Message { Content = generatedText, IsUserMessage = false, IsImage = true });
             }
+
         }
         catch (HttpRequestException ex) when (ex.Message.Contains("billing_hard_limit_reached"))
         {
@@ -260,5 +183,96 @@
         message = "";
     }
 
+    private async Task GetCompletions()
+    {
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");  //RETRIEVES FROM HERE
+        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText); //DECRYPTS HERE
+
+
+        generatedText = "Finding Answer...";
+        try
+        {
+            string apiKey = APIKey;     //PLACES HERE
+            string answer = string.Empty;
+            var openai = new OpenAIAPI(apiKey);
+            CompletionRequest completion = new CompletionRequest();
+            completion.Prompt = message;
+            completion.Model = Model.DavinciText;
+            completion.MaxTokens = 4000;
+            var result = await openai.Completions.CreateCompletionAsync(completion);
+
+            if (result != null)
+            {
+                foreach (var item in result.Completions)
+                {
+                    GPT3Response.Response = item.Text;
+                }
+                generatedText = GPT3Response.Response;
+                generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
+                // Add user message to the list
+                Messages.Add(new Message { Content = message, IsUserMessage = true });
+
+                // Add GPT response to the list
+                Messages.Add(new Message { Content = GPT3Response.Response, IsUserMessage = false });
+
+
+            }
+
+            StateHasChanged();
+            message = "";
+        }
+
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    private async Task GetChat()
+    {
+        EncryptedText = await LocalStorage.GetItemAsync<string>("SampleKey");
+        APIKey = await EncryptProvider.Decrypt<string>(EncryptedText);
+
+        generatedText = "Finding Answer...";
+        try
+        {
+            string apiKey = APIKey;
+            var openai = new OpenAIAPI(apiKey);
+            ChatRequest chatRequest = new ChatRequest();
+            chatRequest.Messages = new List<ChatMessage>();
+            chatRequest.Model = Model.ChatGPTTurbo;
+            chatRequest.MaxTokens = 4000;
+
+            chatRequest.Messages.Add(new ChatMessage() { Role = ChatMessageRole.System, Content = "You are a helpful assistant." });
+            chatRequest.Messages.Add(new ChatMessage() { Role = ChatMessageRole.User, Content = message });
+
+            var chatResult = await openai.Chat.CreateChatCompletionAsync(chatRequest);
+
+            if (chatResult != null)
+            {
+                var assistantMessage = chatResult.Choices[0].Message;
+
+                if (assistantMessage != null)
+                {
+                    GPT3Response.Response = assistantMessage.Content;
+                    generatedText = GPT3Response.Response.Replace("§§", "").Replace("\\n", "<br>");
+                }
+            }
+
+            // Add user message to the list
+            Messages.Add(new Message { Content = message, IsUserMessage = true });
+
+            // Add GPT response to the list
+            Messages.Add(new Message { Content = GPT3Response.Response, IsUserMessage = false });
+
+            StateHasChanged();
+            message = "";
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 
 }
+
