@@ -125,3 +125,45 @@ a, .btn-link {
     margin-bottom: .5rem;
     font-weight: bold;
 }
+.todo-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item span {
+    flex-grow: 1;
+    padding-left: 1rem;
+}
+
+.todo-item input[type="checkbox"] {
+    cursor: pointer;
+}
+
+button.remove-completed {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+    transition: all 0.3s;
+}
+
+button.remove-completed:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
