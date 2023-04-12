@@ -53,10 +53,14 @@
         @foreach (var todo in Todos)
         {
             <div class="todo-item">
+                <input type="checkbox" @bind="todo.IsDone" />&nbsp;
                 <span>@todo.Content</span>
             </div>
         }
     </div>
+</div>
+<div class="form-group text-center clear">
+    <button class="btn btn-primary mb-4 px-2" style="max-width:200px;" @onclick="@RemoveCompletedTodos">Remove Completed Todos</button>&nbsp;
 </div>
 
 @code {
@@ -74,6 +78,7 @@
     private class TodoItem
     {
         public string Content { get; set; } = "";
+        public bool IsDone { get; set; } = false;
     }
 
     private async Task AddTodo()
@@ -118,6 +123,7 @@
             Console.WriteLine("Error initializing component: " + ex.Message);
         }
     }
+
 
 
 
@@ -208,5 +214,22 @@
         TodoContent = suggestion;
         Suggestions.Clear();
     }
+    private async Task RemoveCompletedTodos()
+{
+    Todos.RemoveAll(todo => todo.IsDone);
+
+    // Update the stored todo keys and items
+    TodoKeys.RemoveAll(key => Todos.All(todo => todo.Content != key));
+
+    var todoKeysJson = JsonSerializer.Serialize(TodoKeys);
+    var encryptedKeys = await EncryptProvider.Encrypt(todoKeysJson);
+    await LocalStorage.SetItemAsync<string>("TodoKeys", encryptedKeys);
+
+    foreach (var todo in Todos)
+    {
+        var encryptedTodo = await EncryptProvider.Encrypt(todo.Content);
+        await LocalStorage.SetItemAsync<string>(todo.Content, encryptedTodo);
+    }
+}
 }
 
