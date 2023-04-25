@@ -1,0 +1,58 @@
+@page "/chat"
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime;
+
+<!-- Add input fields for binary name, model path, and argument mode -->
+<div>
+    <label for="binaryName">Binary Name:</label>
+    <input @bind="BinaryName" id="binaryName" type="text" />
+</div>
+<div>
+    <label for="modelPath">Model Path:</label>
+    <input @bind="ModelPath" id="modelPath" type="text" />
+</div>
+<div>
+    <label for="argumentMode">Argument Mode:</label>
+    <input @bind="ArgumentMode" id="argumentMode" type="checkbox" />
+</div>
+<button @onclick="InitializeBinary">Initialize Binary</button>
+
+<!-- ... rest of the code ... -->
+
+@code {
+    private string BinaryName { get; set; } = string.Empty;
+    private string ModelPath { get; set; } = string.Empty;
+    private bool ArgumentMode { get; set; } = false;
+
+    // ... rest of the code ...
+
+    private async Task InitializeBinary()
+    {
+        if (!string.IsNullOrEmpty(BinaryName) && !string.IsNullOrEmpty(ModelPath))
+        {
+            var data = new { binary = BinaryName, model = ModelPath, argumentMode = ArgumentMode };
+            var response = await Http.PostAsJsonAsync("http://127.0.0.1:5000/initialize", data);
+
+            var result = await response.Content.ReadFromJsonAsync<InitializeResponse>();
+            if (result.Success)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Binary successfully initialized");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Error: {result.Error}");
+            }
+        }
+    }
+
+    public class InitializeResponse
+    {
+        public bool Success { get; set; }
+        public string Error { get; set; }
+    }
+
+    // ... rest of the code ...
+}
