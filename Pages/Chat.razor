@@ -5,54 +5,40 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime;
 
-<!-- Add input fields for binary name, model path, and argument mode -->
-<div>
-    <label for="binaryName">Binary Name:</label>
-    <input @bind="BinaryName" id="binaryName" type="text" />
-</div>
-<div>
-    <label for="modelPath">Model Path:</label>
-    <input @bind="ModelPath" id="modelPath" type="text" />
-</div>
-<div>
-    <label for="argumentMode">Argument Mode:</label>
-    <input @bind="ArgumentMode" id="argumentMode" type="checkbox" />
-</div>
-<button @onclick="InitializeBinary">Initialize Binary</button>
+<h3>Chat</h3>
 
-<!-- ... rest of the code ... -->
+<div>
+    <input @bind="InputText" placeholder="Enter your message" />
+    <input @bind="BinaryPath" placeholder="Enter binary path (optional)" />
+    <button @onclick="SendMessage">Send</button>
+</div>
+
+<div>
+    <h4>Response:</h4>
+    <p>@OutputText</p>
+</div>
 
 @code {
-    private string BinaryName { get; set; } = string.Empty;
-    private string ModelPath { get; set; } = string.Empty;
-    private bool ArgumentMode { get; set; } = false;
+    private string InputText { get; set; } = string.Empty;
+    private string BinaryPath { get; set; } = string.Empty;
+    private string OutputText { get; set; } = string.Empty;
 
-    // ... rest of the code ...
-
-    private async Task InitializeBinary()
+    private async Task SendMessage()
     {
-        if (!string.IsNullOrEmpty(BinaryName) && !string.IsNullOrEmpty(ModelPath))
-        {
-            var data = new { binary = BinaryName, model = ModelPath, argumentMode = ArgumentMode };
-            var response = await Http.PostAsJsonAsync("http://127.0.0.1:5000/initialize", data);
+        var data = new { input = InputText, binary_path = BinaryPath };
+        var response = await Http.PostAsJsonAsync("http://127.0.0.1:5000/chat", data);
 
-            var result = await response.Content.ReadFromJsonAsync<InitializeResponse>();
-            if (result.Success)
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Binary successfully initialized");
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("alert", $"Error: {result.Error}");
-            }
-        }
+        // Log the status code and content to the browser console
+        await JSRuntime.InvokeVoidAsync("console.log", $"Status code: {response.StatusCode}");
+        var content = await response.Content.ReadAsStringAsync();
+        await JSRuntime.InvokeVoidAsync("console.log", $"Content: {content}");
+
+        var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
+        OutputText = result.Output;
     }
 
-    public class InitializeResponse
+    public class ApiResponse
     {
-        public bool Success { get; set; }
-        public string Error { get; set; }
+        public string Output { get; set; }
     }
-
-    // ... rest of the code ...
 }
