@@ -1,0 +1,47 @@
+@page "/configure-chat"
+
+<button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
+
+@code {
+    async Task ConfigureChatBinary()
+    {
+        string apiUrl = "http://your_flask_server:5000/configure";
+
+        var config = new
+        {
+            args = new string[]
+            {
+                "-t", "4",
+                "-s", "42",
+                "--top_p", "2",
+                "--top_k", "160",
+                "--n_predict", "100",
+                "--temp", "0.50",
+                "--repeat_penalty", "1.1",
+                "-c", "2048",
+                "--repeat_last_n", "128",
+                "-r", "PROMPT",
+                "--interactive-start",
+                "-m", "ggml-model.bin",
+            }
+        };
+
+        var response = await Http.PostAsJsonAsync(apiUrl, config);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<ConfigureResult>();
+            Console.WriteLine($"Status: {result.Status}, Message: {result.Message}");
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
+    }
+
+    public class ConfigureResult
+    {
+        public string Status { get; set; }
+        public string Message { get; set; }
+    }
+}
