@@ -1,0 +1,163 @@
+@page "/configure"
+@inject HttpClient Http
+
+<label>Chat Binary: <input type="text" @bind="Arguments.ChatBinary" /></label>
+<br />
+<label>Interactive: <input type="checkbox" @bind="Arguments.Interactive" /></label>
+<br />
+<label>Interactive Start: <input type="checkbox" @bind="Arguments.InteractiveStart" /></label>
+<br />
+<label>Reverse Prompt: <input type="text" @bind="Arguments.ReversePrompt" /></label>
+<br />
+<label>Color: <input type="checkbox" @bind="Arguments.Color" /></label>
+<br />
+<label>Seed: <input type="number" @bind="Arguments.Seed" /></label>
+<br />
+<label>Threads: <input type="number" @bind="Arguments.Threads" /></label>
+<br />
+<label>Prompt: <input type="text" @bind="Arguments.Prompt" /></label>
+<br />
+<label>File: <input type="text" @bind="Arguments.File" /></label>
+<br />
+<label>N Predict: <input type="number" @bind="Arguments.NPredict" /></label>
+<br />
+<label>Top K: <input type="number" @bind="Arguments.TopK" /></label>
+<br />
+<label>Top P: <input type="number" step="0.01" @bind="Arguments.TopP" /></label>
+<br />
+<label>Repeat Last N: <input type="number" @bind="Arguments.RepeatLastN" /></label>
+<br />
+<label>Repeat Penalty: <input type="number" step="0.01" @bind="Arguments.RepeatPenalty" /></label>
+<br />
+<label>Ctx Size: <input type="number" @bind="Arguments.CtxSize" /></label>
+<br />
+<label>Temp: <input type="number" step="0.01" @bind="Arguments.Temp" /></label>
+<br />
+<label>Batch Size: <input type="number" @bind="Arguments.BatchSize" /></label>
+<br />
+<label>Model: <input type="text" @bind="Arguments.Model" /></label>
+<br />
+<label>Context Memory: <input type="number" @bind="Arguments.ContextMemory" /></label>
+
+
+
+<button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
+<p>@OutputMessage</p>
+
+@code {
+    ChatArguments Arguments { get; set; } = new ChatArguments
+    {
+        Threads = 4,
+        Seed = 42,
+        TopP = 2,
+        TopK = 160,
+        NPredict = 100,
+        Temp = 0.50,
+        RepeatPenalty = 1.1,
+        CtxSize = 2048,
+        RepeatLastN = 128,
+        Prompt = "",
+        Additional = "",
+        ContextMemory = 0,
+    };
+
+    string OutputMessage { get; set; } = "";
+
+    async Task ConfigureChatBinary()
+    {
+        string apiUrl = "http://localhost:5000/configure";
+
+        var args = Arguments.ToArgsList();
+        var config = new { args, chat_binary = Arguments.ChatBinary };
+
+        var response = await Http.PostAsJsonAsync(apiUrl, config);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<ConfigureResult>();
+            OutputMessage = $"Status: {result.Status}, Message: {result.Message}";
+
+            // Send an empty message to the chat endpoint to get the initial output
+            response = await Http.PostAsJsonAsync("http://localhost:5000/chat", new { input = Arguments.Prompt });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var chatResult = await response.Content.ReadFromJsonAsync<ChatResult>();
+                OutputMessage += $", Response: {chatResult.Output}";
+            }
+            else
+            {
+                OutputMessage += $", Error: {response.StatusCode}";
+            }
+        }
+        else
+        {
+            OutputMessage = $"Error: {response.StatusCode}";
+        }
+    }
+
+
+
+
+
+    public class ConfigureResult
+    {
+        public string Status { get; set; }
+        public string Message { get; set; }
+        public List<string> Response { get; set; }
+    }
+    public class ChatResult
+    {
+        public string Output { get; set; }
+    }
+
+    public class ChatArguments
+    {
+        public string ChatBinary { get; set; }
+        public bool Interactive { get; set; }
+        public bool InteractiveStart { get; set; }
+        public string ReversePrompt { get; set; }
+        public bool Color { get; set; }
+        public int Seed { get; set; }
+        public int Threads { get; set; }
+        public string Prompt { get; set; } = "The following is a friendly conversation between human and AI called Al. AI is talkative and provides details from its context."; // Add this line
+        public string File { get; set; }
+        public int NPredict { get; set; }
+        public int TopK { get; set; }
+        public double TopP { get; set; }
+        public int RepeatLastN { get; set; }
+        public double RepeatPenalty { get; set; }
+        public int CtxSize { get; set; }
+        public double Temp { get; set; }
+        public int BatchSize { get; set; }
+        public string Model { get; set; }
+        public string Additional { get; set; }
+        public int ContextMemory { get; set; } = 0; // Add this line
+        public List<string> ToArgsList()
+        {
+            var args = new List<string>();
+            
+            if (Interactive) args.Add("-i");
+            if (InteractiveStart) args.Add("--interactive-start");
+            if (!string.IsNullOrEmpty(ReversePrompt)) args.AddRange(new[] { "-r", ReversePrompt });
+            if (Color) args.Add("--color");
+            if (Seed != 0) args.AddRange(new[] { "-s", Seed.ToString() });
+            if (Threads != 0) args.AddRange(new[] { "-t", Threads.ToString() });
+            if (!string.IsNullOrEmpty(Prompt)) args.AddRange(new[] { "-p", Prompt });
+            if (!string.IsNullOrEmpty(File)) args.AddRange(new[] { "-f", File });
+            if (NPredict != 0) args.AddRange(new[] { "-n", NPredict.ToString() });
+            if (TopK != 0) args.AddRange(new[] { "--top_k", TopK.ToString() });
+            if (TopP != 0) args.AddRange(new[] { "--top_p", TopP.ToString() });
+            if (RepeatLastN != 0) args.AddRange(new[] { "--repeat_last_n", RepeatLastN.ToString() });
+            if (RepeatPenalty != 0) args.AddRange(new[] { "--repeat_penalty", RepeatPenalty.ToString() });
+            if (CtxSize != 0) args.AddRange(new[] { "-c", CtxSize.ToString() });
+            if (Temp != 0) args.AddRange(new[] { "--temp", Temp.ToString() });
+            if (BatchSize != 0) args.AddRange(new[] { "-b", BatchSize.ToString() });
+            if (!string.IsNullOrEmpty(Model)) args.AddRange(new[] { "-m", Model });
+            if (ContextMemory != 0) args.AddRange(new[] { "--context_memory", ContextMemory.ToString() });
+
+            return args;
+        }
+    }
+
+}
