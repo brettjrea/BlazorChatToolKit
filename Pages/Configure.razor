@@ -201,6 +201,32 @@
 <div class="output-message">@OutputMessage</div>
 
 @code {
+void ApplyToggles()
+    {
+    // Assuming you have access to ToggleSettingsService here
+    var toggleSettings = ToggleSettingsService.ToggleSettings;
+
+    Arguments.ChatBinary = toggleSettings.ChatBinary ? Arguments.ChatBinary : "";
+    Arguments.Model = toggleSettings.Model ? Arguments.Model : "";
+    Arguments.Prompt = toggleSettings.Prompt ? Arguments.Prompt : "";
+    Arguments.Interactive = toggleSettings.Interactive;
+    Arguments.InteractiveStart = toggleSettings.InteractiveStart;
+    Arguments.Color = toggleSettings.Color;
+    Arguments.File = toggleSettings.File ? Arguments.File : "";
+    Arguments.Seed = toggleSettings.Seed ? Arguments.Seed : 0;
+    Arguments.Threads = toggleSettings.Threads ? Arguments.Threads : 0;
+    Arguments.NPredict = toggleSettings.NPredict ? Arguments.NPredict : 0;
+    Arguments.TopK = toggleSettings.TopK ? Arguments.TopK : 0;
+    Arguments.TopP = toggleSettings.TopP ? Arguments.TopP : 0;
+    Arguments.RepeatLastN = toggleSettings.RepeatLastN ? Arguments.RepeatLastN : 0;
+    Arguments.RepeatPenalty = toggleSettings.RepeatPenalty ? Arguments.RepeatPenalty : 0;
+    Arguments.CtxSize = toggleSettings.CtxSize ? Arguments.CtxSize : 0;
+    Arguments.ContextMemory = toggleSettings.ContextMemory ? Arguments.ContextMemory : 0;
+    Arguments.Temp = toggleSettings.Temp ? Arguments.Temp : 0;
+    Arguments.BatchSize = toggleSettings.BatchSize ? Arguments.BatchSize : 0;
+    Arguments.ReversePrompt = toggleSettings.ReversePrompt ? Arguments.ReversePrompt : "";
+    }
+
     ChatArguments Arguments { get; set; } = new ChatArguments
     {
         ChatBinary = "",
@@ -229,6 +255,7 @@
 
     async Task ConfigureChatBinary()
     {
+        ApplyToggles();
         string apiUrl = "http://localhost:5000/configure";
 
         var args = Arguments.ToArgsList();
@@ -270,7 +297,7 @@
     {
         public string Output { get; set; }
     }
-
+                
     public class ChatArguments
     {
         public string ChatBinary { get; set; }
