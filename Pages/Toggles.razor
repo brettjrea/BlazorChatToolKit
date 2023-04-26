@@ -1,0 +1,122 @@
+@page "/toggles"
+@using BlazorChatToolKit.Pages
+@using BlazorChatToolKit.Services
+@inject ToggleSettingsService ToggleSettingsService
+
+<h2>Toggle Settings</h2>
+<p>Enable or disable the settings below:</p>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="chatBinaryToggle" @bind="ToggleSettingsService.ToggleSettings.ChatBinary">
+        <label class="form-check-label" for="chatBinaryToggle">Chat Binary</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="interactiveToggle" @bind="ToggleSettingsService.ToggleSettings.Interactive">
+        <label class="form-check-label" for="interactiveToggle">Interactive</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="interactiveStartToggle" @bind="ToggleSettingsService.ToggleSettings.InteractiveStart">
+        <label class="form-check-label" for="interactiveStartToggle">InteractiveStart</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="ReversePromptToggle" @bind="ToggleSettingsService.ToggleSettings.ReversePrompt">
+        <label class="form-check-label" for="ReversePromptToggle">ReversePrompt</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="colorToggle" @bind="ToggleSettingsService.ToggleSettings.Color">
+        <label class="form-check-label" for="colortToggle">Color</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="promptToggle" @bind="ToggleSettingsService.ToggleSettings.Prompt">
+        <label class="form-check-label" for="promptToggle">Prompt</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="fileToggle" @bind="ToggleSettingsService.ToggleSettings.File">
+        <label class="form-check-label" for="fileToggle">File</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="seedToggle" @bind="ToggleSettingsService.ToggleSettings.Seed">
+        <label class="form-check-label" for="seedToggle">Seed</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="threadsToggle" @bind="ToggleSettingsService.ToggleSettings.Threads">
+        <label class="form-check-label" for="threadsToggle">Threads</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="npredictToggle" @bind="ToggleSettingsService.ToggleSettings.NPredict">
+        <label class="form-check-label" for="npredictToggle">NPredict</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="topkToggle" @bind="ToggleSettingsService.ToggleSettings.TopK">
+        <label class="form-check-label" for="topkToggle">TopK</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="toppToggle" @bind="ToggleSettingsService.ToggleSettings.TopP">
+        <label class="form-check-label" for="toppToggle">TopP</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="repeatLastNToggle" @bind="ToggleSettingsService.ToggleSettings.RepeatLastN">
+        <label class="form-check-label" for="repeatLastNToggle">RepeatLastN</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="repeatPenaltyToggle" @bind="ToggleSettingsService.ToggleSettings.RepeatPenalty">
+        <label class="form-check-label" for="repeatPenaltyToggle">RepeatPenalty</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="ctxSizeToggle" @bind="ToggleSettingsService.ToggleSettings.CtxSize">
+        <label class="form-check-label" for="ctxSizeToggle">CtxSize</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="tempToggle" @bind="ToggleSettingsService.ToggleSettings.Temp">
+        <label class="form-check-label" for="tempToggle">Temp</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="batchSizeToggle" @bind="ToggleSettingsService.ToggleSettings.BatchSize">
+        <label class="form-check-label" for="batchSizeToggle">BatchSize</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="modelToggle" @bind="ToggleSettingsService.ToggleSettings.Model">
+        <label class="form-check-label" for="modelToggle">Model</label>
+    </div>
+</div>
+<div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="contextMemoryToggle" @bind="ToggleSettingsService.ToggleSettings.ContextMemory">
+        <label class="form-check-label" for="contextMemoryToggle">ContextMemory</label>
+    </div>
+</div>
+<!-- Add more toggle switches for each setting here -->
