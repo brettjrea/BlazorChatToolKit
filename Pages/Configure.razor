@@ -206,9 +206,9 @@ void ApplyToggles()
     // Assuming you have access to ToggleSettingsService here
     var toggleSettings = ToggleSettingsService.ToggleSettings;
 
-    Arguments.ChatBinary = toggleSettings.ChatBinary ? "" : ""; // default: ""
-    Arguments.Model = toggleSettings.Model ? "" : ""; // default: ""
-    Arguments.Prompt = toggleSettings.Prompt ? "" : ""; // default: ""
+    Arguments.ChatBinary = toggleSettings.ChatBinary ? "./chat" : ""; // default: ""
+    Arguments.Model = toggleSettings.Model ? "ggml-alpaca-7b-q4.bin" : ""; // default: ""
+    Arguments.Prompt = toggleSettings.Prompt ? "Hello World" : ""; // default: ""
     Arguments.Interactive = toggleSettings.Interactive ? false : false; // default: false
     Arguments.InteractiveStart = toggleSettings.InteractiveStart ? false : false; // default: false
     Arguments.Color = toggleSettings.Color ? false : false; // default: false
