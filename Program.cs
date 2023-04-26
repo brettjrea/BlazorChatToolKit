@@ -14,5 +14,5 @@ builder.Services.AddBlazoredSessionStorage();
 
 builder.Services.AddScoped<BlazorChatToolKit.Shared.IEncryptProvider, AesJsProvider>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
+builder.Services.AddSingleton<ToggleSettingsService>();
 await builder.Build().RunAsync();
