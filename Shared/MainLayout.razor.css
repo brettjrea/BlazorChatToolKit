@@ -7,7 +7,16 @@
 main {
     flex: 1;
 }
-
+.output-message {
+    font-family: Arial, sans-serif;
+    font-size: 1.1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    color: #333;
+}
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
