@@ -201,32 +201,40 @@
 <div class="output-message">@OutputMessage</div>
 
 @code {
-void ApplyToggles()
+private T SetDefaultValue<T>(bool toggleEnabled, T inputValue, T defaultValue)
 {
-    // Assuming you have access to ToggleSettingsService here
-    var toggleSettings = ToggleSettingsService.ToggleSettings;
+    if (toggleEnabled)
+    {
+        return inputValue.Equals(default(T)) ? defaultValue : inputValue;
+    }
 
-    Arguments.ChatBinary = toggleSettings.ChatBinary ? "./chat" : ""; // default: ""
-    Arguments.Model = toggleSettings.Model ? "ggml-alpaca-7b-q4.bin" : ""; // default: ""
-    Arguments.Prompt = toggleSettings.Prompt ? "Hello World" : ""; // default: ""
-    Arguments.Interactive = toggleSettings.Interactive ? false : false; // default: false
-    Arguments.InteractiveStart = toggleSettings.InteractiveStart ? false : false; // default: false
-    Arguments.Color = toggleSettings.Color ? false : false; // default: false
-    Arguments.File = toggleSettings.File ? "" : ""; // default: ""
-    Arguments.Seed = toggleSettings.Seed ? 1682472206 : 0; // default: 1682472206
-    Arguments.Threads = toggleSettings.Threads ? 4 : 0; // default: 4
-    Arguments.NPredict = toggleSettings.NPredict ? 100 : 0; // default: 100
-    Arguments.TopK = toggleSettings.TopK ? 40 : 0; // default: 40
-    Arguments.TopP = toggleSettings.TopP ? 0.95 : 0; // default: 0.95
-    Arguments.RepeatLastN = toggleSettings.RepeatLastN ? 64 : 0; // default: 64
-    Arguments.RepeatPenalty = toggleSettings.RepeatPenalty ? 1.3 : 0; // default: 1.3
-    Arguments.CtxSize = toggleSettings.CtxSize ? 2048 : 0; // default: 2048
-    Arguments.ContextMemory = toggleSettings.ContextMemory ? 0 : 0; // default: 0
-    Arguments.Temp = toggleSettings.Temp ? 0.1 : 0; // default: 0.1
-    Arguments.BatchSize = toggleSettings.BatchSize ? 1 : 0; // default: 1
-    Arguments.ReversePrompt = toggleSettings.ReversePrompt ? "" : ""; // default: ""
+    return default(T);
 }
 
+void ApplyToggles()
+{
+    var toggleSettings = ToggleSettingsService.ToggleSettings;
+
+    Arguments.ChatBinary = SetDefaultValue(toggleSettings.ChatBinary, Arguments.ChatBinary, "");
+    Arguments.Model = SetDefaultValue(toggleSettings.Model, Arguments.Model, "");
+    Arguments.Prompt = SetDefaultValue(toggleSettings.Prompt, Arguments.Prompt, "");
+    Arguments.Interactive = SetDefaultValue(toggleSettings.Interactive, Arguments.Interactive, false);
+    Arguments.InteractiveStart = SetDefaultValue(toggleSettings.InteractiveStart, Arguments.InteractiveStart, false);
+    Arguments.Color = SetDefaultValue(toggleSettings.Color, Arguments.Color, false);
+    Arguments.File = SetDefaultValue(toggleSettings.File, Arguments.File, "");
+    Arguments.Seed = SetDefaultValue(toggleSettings.Seed, Arguments.Seed, 1682472206);
+    Arguments.Threads = SetDefaultValue(toggleSettings.Threads, Arguments.Threads, 4);
+    Arguments.NPredict = SetDefaultValue(toggleSettings.NPredict, Arguments.NPredict, 100);
+    Arguments.TopK = SetDefaultValue(toggleSettings.TopK, Arguments.TopK, 40);
+    Arguments.TopP = SetDefaultValue(toggleSettings.TopP, Arguments.TopP, 0.95);
+    Arguments.RepeatLastN = SetDefaultValue(toggleSettings.RepeatLastN, Arguments.RepeatLastN, 64);
+    Arguments.RepeatPenalty = SetDefaultValue(toggleSettings.RepeatPenalty, Arguments.RepeatPenalty, 1.3);
+    Arguments.CtxSize = SetDefaultValue(toggleSettings.CtxSize, Arguments.CtxSize, 2048);
+    Arguments.ContextMemory = SetDefaultValue(toggleSettings.ContextMemory, Arguments.ContextMemory, 0);
+    Arguments.Temp = SetDefaultValue(toggleSettings.Temp, Arguments.Temp, 0.1);
+    Arguments.BatchSize = SetDefaultValue(toggleSettings.BatchSize, Arguments.BatchSize, 1);
+    Arguments.ReversePrompt = SetDefaultValue(toggleSettings.ReversePrompt, Arguments.ReversePrompt, "");
+}
 
     ChatArguments Arguments { get; set; } = new ChatArguments();
 
