@@ -1,45 +1,83 @@
 @page "/configure"
 @inject HttpClient Http
 
+<!-- Chat Binary -->
 <label>Chat Binary: <input type="text" @bind="Arguments.ChatBinary" /></label>
 <br />
+
+<!-- Interactive -->
 <label>Interactive: <input type="checkbox" @bind="Arguments.Interactive" /></label>
 <br />
+
+<!-- Interactive Start -->
 <label>Interactive Start: <input type="checkbox" @bind="Arguments.InteractiveStart" /></label>
 <br />
+
+<!-- Reverse Prompt -->
 <label>Reverse Prompt: <input type="text" @bind="Arguments.ReversePrompt" /></label>
 <br />
+
+<!-- Color -->
 <label>Color: <input type="checkbox" @bind="Arguments.Color" /></label>
 <br />
+
+<!-- Seed -->
 <label>Seed: <input type="number" @bind="Arguments.Seed" /></label>
 <br />
+
+<!-- Threads -->
 <label>Threads: <input type="number" @bind="Arguments.Threads" /></label>
 <br />
+
+<!-- Prompt -->
 <label>Prompt: <input type="text" @bind="Arguments.Prompt" /></label>
 <br />
+
+<!-- File -->
 <label>File: <input type="text" @bind="Arguments.File" /></label>
 <br />
+
+<!-- N Predict -->
 <label>N Predict: <input type="number" @bind="Arguments.NPredict" /></label>
 <br />
+
+<!-- Top K -->
 <label>Top K: <input type="number" @bind="Arguments.TopK" /></label>
 <br />
+
+<!-- Top P -->
 <label>Top P: <input type="number" step="0.01" @bind="Arguments.TopP" /></label>
 <br />
+
+<!-- Repeat Last N -->
 <label>Repeat Last N: <input type="number" @bind="Arguments.RepeatLastN" /></label>
 <br />
+
+<!-- Repeat Penalty -->
 <label>Repeat Penalty: <input type="number" step="0.01" @bind="Arguments.RepeatPenalty" /></label>
 <br />
+
+<!-- Ctx Size -->
 <label>Ctx Size: <input type="number" @bind="Arguments.CtxSize" /></label>
 <br />
+
+<!-- Temp -->
 <label>Temp: <input type="number" step="0.01" @bind="Arguments.Temp" /></label>
 <br />
+
+<!-- Batch Size -->
 <label>Batch Size: <input type="number" @bind="Arguments.BatchSize" /></label>
 <br />
+
+<!-- Model -->
 <label>Model: <input type="text" @bind="Arguments.Model" /></label>
 <br />
+
+<!-- Context Memory -->
 <label>Context Memory: <input type="number" @bind="Arguments.ContextMemory" /></label>
 
-
+<button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
+<p>@OutputMessage</p>
 
 <button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
 <p>@OutputMessage</p>
