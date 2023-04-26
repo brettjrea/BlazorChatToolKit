@@ -200,50 +200,45 @@
 
 <button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
 <div class="output-message">@OutputMessage</div>
-<br /><br />
-<ChatSettings @bind-Arguments="Arguments" OnTemplateApplied="OnTemplateApplied" />
-
-<p>@Arguments.ToString()</p>
 
 @code {
-    ChatArguments Arguments = new();
-
-    private void OnTemplateApplied(ChatArguments template)
+private T SetDefaultValue<T>(bool toggleEnabled, T inputValue, T defaultValue)
+{
+    if (toggleEnabled)
     {
-        Arguments = template;
-        ApplyTogglesAndSetDefaults(template);
+        return EqualityComparer<T>.Default.Equals(inputValue, default(T)) ? defaultValue : inputValue;
     }
 
-    void ApplyTogglesAndSetDefaults(ChatArguments template)
-    {
-        var toggleSettings = ToggleSettingsService.ToggleSettings;
-
-        Arguments.ChatBinary = SetDefaultValue(toggleSettings.ChatBinary, Arguments.ChatBinary, template.ChatBinary);
-        Arguments.Model = SetDefaultValue(toggleSettings.Model, Arguments.Model, template.Model);
-        Arguments.Prompt = SetDefaultValue(toggleSettings.Prompt, Arguments.Prompt, template.Prompt);
-        Arguments.Interactive = SetDefaultValue(toggleSettings.Interactive, Arguments.Interactive, template.Interactive);
-        Arguments.InteractiveStart = SetDefaultValue(toggleSettings.InteractiveStart, Arguments.InteractiveStart, template.InteractiveStart);
-        Arguments.Color = SetDefaultValue(toggleSettings.Color, Arguments.Color, template.Color);
-        Arguments.File = SetDefaultValue(toggleSettings.File, Arguments.File, template.File);
-        Arguments.Seed = SetDefaultValue(toggleSettings.Seed, Arguments.Seed, template.Seed);
-        Arguments.Threads = SetDefaultValue(toggleSettings.Threads, Arguments.Threads, template.Threads);
-        Arguments.NPredict = SetDefaultValue(toggleSettings.NPredict, Arguments.NPredict, template.NPredict);
-        Arguments.TopK = SetDefaultValue(toggleSettings.TopK, Arguments.TopK, template.TopK);
-        Arguments.TopP = SetDefaultValue(toggleSettings.TopP, Arguments.TopP, template.TopP);
-        Arguments.RepeatLastN = SetDefaultValue(toggleSettings.RepeatLastN, Arguments.RepeatLastN, template.RepeatLastN);
-        Arguments.RepeatPenalty = SetDefaultValue(toggleSettings.RepeatPenalty, Arguments.RepeatPenalty, template.RepeatPenalty);
-        Arguments.CtxSize = SetDefaultValue(toggleSettings.CtxSize, Arguments.CtxSize, template.CtxSize);
-        Arguments.ContextMemory = SetDefaultValue(toggleSettings.ContextMemory, Arguments.ContextMemory, template.ContextMemory);
-        Arguments.Temp = SetDefaultValue(toggleSettings.Temp, Arguments.Temp, template.Temp);
-        Arguments.BatchSize = SetDefaultValue(toggleSettings.BatchSize, Arguments.BatchSize, template.BatchSize);
-        Arguments.ReversePrompt = SetDefaultValue(toggleSettings.ReversePrompt, Arguments.ReversePrompt, template.ReversePrompt);
-    }
-
-    T SetDefaultValue<T>(bool useDefault, T currentValue, T defaultValue)
-    {
-        return useDefault ? defaultValue : currentValue;
-    }
+    return default(T);
 }
+
+
+void ApplyToggles()
+{
+    var toggleSettings = ToggleSettingsService.ToggleSettings;
+
+    Arguments.ChatBinary = SetDefaultValue(toggleSettings.ChatBinary, Arguments.ChatBinary, "");
+    Arguments.Model = SetDefaultValue(toggleSettings.Model, Arguments.Model, "");
+    Arguments.Prompt = SetDefaultValue(toggleSettings.Prompt, Arguments.Prompt, "");
+    Arguments.Interactive = SetDefaultValue(toggleSettings.Interactive, Arguments.Interactive, false);
+    Arguments.InteractiveStart = SetDefaultValue(toggleSettings.InteractiveStart, Arguments.InteractiveStart, false);
+    Arguments.Color = SetDefaultValue(toggleSettings.Color, Arguments.Color, false);
+    Arguments.File = SetDefaultValue(toggleSettings.File, Arguments.File, "");
+    Arguments.Seed = SetDefaultValue(toggleSettings.Seed, Arguments.Seed, 1682472206);
+    Arguments.Threads = SetDefaultValue(toggleSettings.Threads, Arguments.Threads, 4);
+    Arguments.NPredict = SetDefaultValue(toggleSettings.NPredict, Arguments.NPredict, 100);
+    Arguments.TopK = SetDefaultValue(toggleSettings.TopK, Arguments.TopK, 40);
+    Arguments.TopP = SetDefaultValue(toggleSettings.TopP, Arguments.TopP, 0.95);
+    Arguments.RepeatLastN = SetDefaultValue(toggleSettings.RepeatLastN, Arguments.RepeatLastN, 64);
+    Arguments.RepeatPenalty = SetDefaultValue(toggleSettings.RepeatPenalty, Arguments.RepeatPenalty, 1.3);
+    Arguments.CtxSize = SetDefaultValue(toggleSettings.CtxSize, Arguments.CtxSize, 2048);
+    Arguments.ContextMemory = SetDefaultValue(toggleSettings.ContextMemory, Arguments.ContextMemory, 0);
+    Arguments.Temp = SetDefaultValue(toggleSettings.Temp, Arguments.Temp, 0.1);
+    Arguments.BatchSize = SetDefaultValue(toggleSettings.BatchSize, Arguments.BatchSize, 1);
+    Arguments.ReversePrompt = SetDefaultValue(toggleSettings.ReversePrompt, Arguments.ReversePrompt, "");
+}
+
+    ChatArguments Arguments { get; set; } = new ChatArguments();
 
 
     string OutputMessage { get; set; } = "";
