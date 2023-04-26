@@ -3,6 +3,7 @@ using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorChatToolKit;
+using BlazorChatToolKit.Services;
 using BlazorChatToolKit.Shared.EncryptProviders;
 using System.Net.Http;
 
