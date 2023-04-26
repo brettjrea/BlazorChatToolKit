@@ -3,74 +3,92 @@
 
 <!-- Chat Binary -->
 <label>Chat Binary: <input type="text" @bind="Arguments.ChatBinary" /></label>
+<br /><small>Path to the chat binary executable</small>
 <br />
 
 <!-- Interactive -->
 <label>Interactive: <input type="checkbox" @bind="Arguments.Interactive" /></label>
+<br /><small>Enable interactive mode</small>
 <br />
 
 <!-- Interactive Start -->
 <label>Interactive Start: <input type="checkbox" @bind="Arguments.InteractiveStart" /></label>
+<br /><small>Start the interactive session immediately</small>
 <br />
 
 <!-- Reverse Prompt -->
 <label>Reverse Prompt: <input type="text" @bind="Arguments.ReversePrompt" /></label>
+<br /><small>Reverse the order of input and output in the prompt</small>
 <br />
 
 <!-- Color -->
 <label>Color: <input type="checkbox" @bind="Arguments.Color" /></label>
+<br /><small>Enable colored output</small>
 <br />
 
 <!-- Seed -->
 <label>Seed: <input type="number" @bind="Arguments.Seed" /></label>
+<br /><small>Random seed for reproducible results</small>
 <br />
 
 <!-- Threads -->
 <label>Threads: <input type="number" @bind="Arguments.Threads" /></label>
+<br /><small>Number of threads to use for parallelism</small>
 <br />
 
 <!-- Prompt -->
 <label>Prompt: <input type="text" @bind="Arguments.Prompt" /></label>
+<br /><small>Text prompt for the chat model</small>
 <br />
 
 <!-- File -->
 <label>File: <input type="text" @bind="Arguments.File" /></label>
+<br /><small>Path to a text file containing prompts</small>
 <br />
 
 <!-- N Predict -->
 <label>N Predict: <input type="number" @bind="Arguments.NPredict" /></label>
+<br /><small>Number of tokens to generate</small>
 <br />
 
 <!-- Top K -->
 <label>Top K: <input type="number" @bind="Arguments.TopK" /></label>
+<br /><small>Number of top candidates to consider for sampling</small>
 <br />
 
 <!-- Top P -->
 <label>Top P: <input type="number" step="0.01" @bind="Arguments.TopP" /></label>
+<br /><small>Probability threshold for top candidates</small>
 <br />
 
 <!-- Repeat Last N -->
 <label>Repeat Last N: <input type="number" @bind="Arguments.RepeatLastN" /></label>
+<br /><small>Number of tokens to consider for repetition penalty</small>
 <br />
 
 <!-- Repeat Penalty -->
 <label>Repeat Penalty: <input type="number" step="0.01" @bind="Arguments.RepeatPenalty" /></label>
+<br /><small>Penalty applied to repeating tokens</small>
 <br />
 
 <!-- Ctx Size -->
 <label>Ctx Size: <input type="number" @bind="Arguments.CtxSize" /></label>
+<br /><small>Context size in tokens</small>
 <br />
 
 <!-- Temp -->
 <label>Temp: <input type="number" step="0.01" @bind="Arguments.Temp" /></label>
+<br /><small>Temperature for sampling diversity</small>
 <br />
 
 <!-- Batch Size -->
 <label>Batch Size: <input type="number" @bind="Arguments.BatchSize" /></label>
+<br /><small>Number of samples to generate in parallel</small>
 <br />
 
 <!-- Model -->
 <label>Model: <input type="text" @bind="Arguments.Model" /></label>
+<br /><small>Path to the pretrained model</small>
 <br />
 
 <!-- Context Memory -->
