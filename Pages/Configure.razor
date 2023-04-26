@@ -2,6 +2,7 @@
 @using BlazorChatToolKit
 @using BlazorChatToolKit.Services
 @using BlazorChatToolKit.Pages
+@using System.Collections.Generic;
 @inject HttpClient Http
 @inject ToggleSettingsService ToggleSettingsService
 
@@ -205,11 +206,12 @@ private T SetDefaultValue<T>(bool toggleEnabled, T inputValue, T defaultValue)
 {
     if (toggleEnabled)
     {
-        return inputValue.Equals(default(T)) ? defaultValue : inputValue;
+        return EqualityComparer<T>.Default.Equals(inputValue, default(T)) ? defaultValue : inputValue;
     }
 
     return default(T);
 }
+
 
 void ApplyToggles()
 {
