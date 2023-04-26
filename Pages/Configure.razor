@@ -25,6 +25,14 @@
 <span title="Enable colored output">[?]</span>
 <br /><br />
 
+<label>Prompt: <input type="text" @bind="Arguments.Prompt" /></label>
+<span title="Text prompt for the chat model">[?]</span>
+<br /><br />
+
+<label>File: <input type="text" @bind="Arguments.File" /></label>
+<span title="Path to a text file containing prompts">[?]</span>
+<br /><br />
+
 <h2>Advanced Settings</h2>
 
 <label>Seed: <input type="number" @bind="Arguments.Seed" /></label>
@@ -35,7 +43,47 @@
 <span title="Number of threads to use for parallelism">[?]</span>
 <br /><br />
 
-<!-- Additional settings go here -->
+<!-- Additional settings -->
+
+<label>N Predict: <input type="number" @bind="Arguments.NPredict" /></label>
+<span title="Number of tokens to generate">[?]</span>
+<br /><br />
+
+<label>Top K: <input type="number" @bind="Arguments.TopK" /></label>
+<span title="Number of top candidates to consider for sampling">[?]</span>
+<br /><br />
+
+<label>Top P: <input type="number" step="0.01" @bind="Arguments.TopP" /></label>
+<span title="Probability threshold for top candidates">[?]</span>
+<br /><br />
+
+<label>Repeat Last N: <input type="number" @bind="Arguments.RepeatLastN" /></label>
+<span title="Number of tokens to consider for repetition penalty">[?]</span>
+<br /><br />
+
+<label>Repeat Penalty: <input type="number" step="0.01" @bind="Arguments.RepeatPenalty" /></label>
+<span title="Penalty applied to repeating tokens">[?]</span>
+<br /><br />
+
+<label>Ctx Size: <input type="number" @bind="Arguments.CtxSize" /></label>
+<span title="Context size in tokens">[?]</span>
+<br /><br />
+
+<label>Temp: <input type="number" step="0.01" @bind="Arguments.Temp" /></label>
+<span title="Temperature for sampling diversity">[?]</span>
+<br /><br />
+
+<label>Batch Size: <input type="number" @bind="Arguments.BatchSize" /></label>
+<span title="Number of samples to generate in parallel">[?]</span>
+<br /><br />
+
+<label>Model: <input type="text" @bind="Arguments.Model" /></label>
+<span title="Path to the pretrained model">[?]</span>
+<br /><br />
+
+<label>Context Memory: <input type="number" @bind="Arguments.ContextMemory" /></label>
+<span title="Amount of context memory in tokens">[?]</span>
+<br /><br />
 
 <button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
 <p>@OutputMessage</p>
