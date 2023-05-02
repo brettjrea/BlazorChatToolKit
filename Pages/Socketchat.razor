@@ -24,10 +24,10 @@
     protected override async Task OnInitializedAsync()
     {
         Socket = new SocketIO("http://localhost:5000");
-        Socket.On("ChatResult", response =>
+        Socket.On("ChatResult", async response =>
         {
             var message = response.GetValue<string>("output");
-            InvokeAsync(() =>
+            await InvokeAsync(() =>
             {
                 Messages.Add(message);
                 StateHasChanged();
