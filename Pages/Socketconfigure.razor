@@ -280,10 +280,9 @@ public async ValueTask DisposeAsync()
 {
     if (socket != null)
     {
-       await socket.disconnect();
+        await socket.DisposeAsync();
     }
 }
-
 
     public class ConfigureResult
     {
