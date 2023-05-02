@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
 @using SocketIOClient
+@using BlazorChatToolKit.Services // Replace with your project's namespace
+@inject ChatConfigurationService ChatConfigurationService
 @inject NavigationManager NavigationManager
 
 <h2>Socket Chat</h2>
@@ -19,11 +21,16 @@
 @code {
     private string InputText { get; set; }
     private List<string> Messages { get; set; } = new List<string>();
-    private SocketIO Socket { get; set; }
+    private SocketIO Socket => ChatConfigurationService.Socket;
 
     protected override async Task OnInitializedAsync()
     {
-        Socket = new SocketIO("http://localhost:5000");
+        if (Socket == null)
+        {
+            NavigationManager.NavigateTo("/"); // Redirect to the configuration page if the socket is not initialized
+            return;
+        }
+
         Socket.On("ChatResult", async response =>
         {
             var message = response.GetValue<string>(0);
@@ -34,9 +41,9 @@
             });
         });
         await Socket.ConnectAsync();
-        
-        // Configure the chat binary
-        await Socket.EmitAsync("Configure", new { args = new string[] { }, chat_binary = "./chat" });
+
+        // Configure the chat binary using the service
+        await ChatConfigurationService.ConfigureChatBinary();
     }
 
     private async Task SendMessage()
