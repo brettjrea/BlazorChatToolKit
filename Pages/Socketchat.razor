@@ -24,9 +24,9 @@
     protected override async Task OnInitializedAsync()
     {
         Socket = new SocketIO("http://localhost:5000");
-        Socket.On("ReceiveMessage", response =>
+        Socket.On("ChatResult", response =>
         {
-            var message = response.GetValue<string>();
+            var message = response.GetValue<string>("output");
             InvokeAsync(() =>
             {
                 Messages.Add(message);
@@ -34,13 +34,16 @@
             });
         });
         await Socket.ConnectAsync();
+        
+        // Configure the chat binary
+        await Socket.EmitAsync("Configure", new { args = new string[] { }, chat_binary = "./chat" });
     }
 
     private async Task SendMessage()
     {
         if (!string.IsNullOrWhiteSpace(InputText))
         {
-            await Socket.EmitAsync("SendMessage", InputText);
+            await Socket.EmitAsync("Chat", new { input = InputText });
             InputText = string.Empty;
         }
     }
