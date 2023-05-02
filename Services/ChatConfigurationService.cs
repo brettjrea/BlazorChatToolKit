@@ -1,4 +1,3 @@
-using BlazorChatToolKit.Pages;
 using System;
 
 namespace BlazorChatToolKit.Services
@@ -15,5 +14,11 @@ namespace BlazorChatToolKit.Services
         }
 
         private void NotifyConfigChanged() => OnConfigChanged?.Invoke();
+    }
+
+    public class ChatArguments // Add this class definition
+    {
+        public string[] Args { get; set; }
+        public string ChatBinary { get; set; }
     }
 }
