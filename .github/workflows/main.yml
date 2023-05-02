@@ -43,7 +43,7 @@ jobs:
       
       # Install WebsocketManager.
     - name: Install SocketIOClient
-      run: dotnet add package SocketIOClient
+      run: dotnet add package SocketIO.Client
 
     # .Net Publish
     - name: Publish app
