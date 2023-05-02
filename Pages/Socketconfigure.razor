@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject ToggleSettingsService ToggleSettingsService
+@inject ChatConfigurationService ChatConfigurationService
 @implements IDisposable
 
 
@@ -252,7 +253,7 @@ void ApplyToggles()
 
 async Task ConfigureChatBinary()
 {
-    ApplyToggles();
+    ChatConfigurationService.SaveConfig(Arguments);
     
     socket = new SocketIO("http://localhost:5000/");
     
