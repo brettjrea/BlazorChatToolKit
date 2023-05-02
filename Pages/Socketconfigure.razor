@@ -3,9 +3,12 @@
 @using BlazorChatToolKit.Services
 @using BlazorChatToolKit.Pages
 @using System.Collections.Generic;
+@using System.Threading.Tasks
 @inject HttpClient Http
 @inject ToggleSettingsService ToggleSettingsService
-@implements IDisposable
+@implements IAsyncDisposable
+
+
 
 <h2>ConfigureChatBinary</h2>
 <div>
@@ -275,9 +278,10 @@ public async ValueTask DisposeAsync()
 {
     if (socket != null)
     {
-        await socket.DisconnectAsync();
+        await socket.DisposeAsync();
     }
 }
+
 
     public class ConfigureResult
     {
