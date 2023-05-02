@@ -204,7 +204,8 @@
     }
 </div>
 
-<button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
+<button @onclick="() => ChatConfigurationService.ConfigureChatBinary(Arguments)">Configure Chat Binary</button>
+
 <div class="output-message">@OutputMessage</div>
 
 @code {
@@ -249,7 +250,8 @@ void ApplyToggles()
 
     string OutputMessage { get; set; } = "";
 
-    private SocketIOClient.SocketIO socket;
+   private SocketIOClient.SocketIO socket => ChatConfigurationService.Socket;
+
 
 async Task ConfigureChatBinary()
 {
