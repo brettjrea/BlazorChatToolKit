@@ -1,0 +1,344 @@
+@page "/socketconfigure"
+@using BlazorChatToolKit
+@using BlazorChatToolKit.Services
+@using BlazorChatToolKit.Pages
+@using System.Collections.Generic;
+@inject HttpClient Http
+@inject ToggleSettingsService ToggleSettingsService
+@implements IDisposable
+
+<h2>ConfigureChatBinary</h2>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.ChatBinary)
+    {
+        <div>
+            <label>Chat Binary: <input type="text" @bind="Arguments.ChatBinary" /></label>
+            <span title="Path to the chat binary executable">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Model)
+    {
+        <div>
+            <label>Model: <input type="text" @bind="Arguments.Model" /></label>
+            <span title="Path to the pretrained model">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Prompt)
+    {
+        <div>
+            <label>Prompt: <input type="text" @bind="Arguments.Prompt" /></label>
+            <span title="Text prompt for the chat model">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Interactive)
+    {
+        <div>
+            <label>Interactive: <input type="checkbox" @bind="Arguments.Interactive" /></label>
+            <span title="Enable interactive mode">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.InteractiveStart)
+    {
+        <div>
+            <label>InteractiveStart: <input type="checkbox" @bind="Arguments.InteractiveStart" /></label>
+            <span title="Start the interactive session immediately">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Color)
+    {
+        <div>
+            <label>Color: <input type="checkbox" @bind="Arguments.Color" /></label>
+            <span title="Enable colored output">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.File)
+    {
+        <div>
+            <label>File: <input type="text" @bind="Arguments.File" /></label>
+            <span title="Path to a text file containing prompts">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Seed)
+    {
+        <div>
+            <label>Seed: <input type="number" @bind="Arguments.Seed" /></label>
+            <span title="Random seed for reproducible results">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Threads)
+    {
+        <div>
+            <label>Seed: <input type="number" @bind="Arguments.Threads" /></label>
+            <span title="Number of threads to use for parallelism">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.NPredict)
+    {
+        <div>
+            <label>N Predict: <input type="number" @bind="Arguments.NPredict" /></label>
+            <span title="Number of tokens to generate">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.TopK)
+    {
+        <div>
+            <label>Top K: : <input type="number" step="0.01" @bind="Arguments.TopK" /></label>
+            <span title="Number of top candidates to consider for sampling">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.TopP)
+    {
+        <div>
+            <label>Top P: <input type="number" step="0.01" @bind="Arguments.TopP" /></label>
+            <span title="Probability threshold for top candidates">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.RepeatLastN)
+    {
+        <div>
+            <label>Repeat Last N: <input type="number" step="0.01" @bind="Arguments.RepeatLastN" /></label>
+            <span title="Number of tokens to consider for repetition penalty">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.RepeatPenalty)
+    {
+        <div>
+            <label>Repeat Penalty: <input type="number" step="0.01" @bind="Arguments.RepeatPenalty" /></label>
+            <span title="Penalty applied to repeating tokens">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.CtxSize)
+    {
+        <div>
+            <label>Ctx Size: <input type="number" step="0.01" @bind="Arguments.CtxSize" /></label>
+            <span title="Context size in tokens">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.ContextMemory)
+    {
+        <div>
+            <label>Context Memory: <input type="number" step="0.01" @bind="Arguments.ContextMemory" /></label>
+            <span title="Amount of context memory in tokens">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.Temp)
+    {
+        <div>
+            <label>Temp: <input type="number" step="0.01" @bind="Arguments.Temp" /></label>
+            <span title="Temperature for sampling diversity">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.BatchSize)
+    {
+        <div>
+            <label>Batch Size:<input type="number" step="0.01" @bind="Arguments.BatchSize" /></label>
+            <span title="Number of samples to generate in parallel">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+<div>
+    @if (ToggleSettingsService.ToggleSettings.ReversePrompt)
+    {
+        <div>
+            <label>Reverse Prompt: <input type="text" @bind="Arguments.ReversePrompt" /></label>
+            <span title="Reverse the order of input and output in the prompt">[?]</span>
+            <br /><br />
+        </div>
+    }
+</div>
+
+<button @onclick="ConfigureChatBinary">Configure Chat Binary</button>
+<div class="output-message">@OutputMessage</div>
+
+@code {
+private T SetDefaultValue<T>(bool toggleEnabled, T inputValue, T defaultValue)
+{
+    if (toggleEnabled)
+    {
+        return EqualityComparer<T>.Default.Equals(inputValue, default(T)) ? defaultValue : inputValue;
+    }
+
+    return default(T);
+}
+
+
+void ApplyToggles()
+{
+    var toggleSettings = ToggleSettingsService.ToggleSettings;
+
+    Arguments.ChatBinary = SetDefaultValue(toggleSettings.ChatBinary, Arguments.ChatBinary, "");
+    Arguments.Model = SetDefaultValue(toggleSettings.Model, Arguments.Model, "");
+    Arguments.Prompt = SetDefaultValue(toggleSettings.Prompt, Arguments.Prompt, "");
+    Arguments.Interactive = SetDefaultValue(toggleSettings.Interactive, Arguments.Interactive, false);
+    Arguments.InteractiveStart = SetDefaultValue(toggleSettings.InteractiveStart, Arguments.InteractiveStart, false);
+    Arguments.Color = SetDefaultValue(toggleSettings.Color, Arguments.Color, false);
+    Arguments.File = SetDefaultValue(toggleSettings.File, Arguments.File, "");
+    Arguments.Seed = SetDefaultValue(toggleSettings.Seed, Arguments.Seed, 1682472206);
+    Arguments.Threads = SetDefaultValue(toggleSettings.Threads, Arguments.Threads, 4);
+    Arguments.NPredict = SetDefaultValue(toggleSettings.NPredict, Arguments.NPredict, 100);
+    Arguments.TopK = SetDefaultValue(toggleSettings.TopK, Arguments.TopK, 40);
+    Arguments.TopP = SetDefaultValue(toggleSettings.TopP, Arguments.TopP, 0.95);
+    Arguments.RepeatLastN = SetDefaultValue(toggleSettings.RepeatLastN, Arguments.RepeatLastN, 64);
+    Arguments.RepeatPenalty = SetDefaultValue(toggleSettings.RepeatPenalty, Arguments.RepeatPenalty, 1.3);
+    Arguments.CtxSize = SetDefaultValue(toggleSettings.CtxSize, Arguments.CtxSize, 2048);
+    Arguments.ContextMemory = SetDefaultValue(toggleSettings.ContextMemory, Arguments.ContextMemory, 0);
+    Arguments.Temp = SetDefaultValue(toggleSettings.Temp, Arguments.Temp, 0.1);
+    Arguments.BatchSize = SetDefaultValue(toggleSettings.BatchSize, Arguments.BatchSize, 1);
+    Arguments.ReversePrompt = SetDefaultValue(toggleSettings.ReversePrompt, Arguments.ReversePrompt, "");
+}
+
+    ChatArguments Arguments { get; set; } = new ChatArguments();
+
+
+    string OutputMessage { get; set; } = "";
+
+    private SocketIO socket;
+
+async Task ConfigureChatBinary()
+{
+    ApplyToggles();
+    
+    socket = new SocketIO("http://localhost:5000/");
+    
+    // Connect to the Socket.IO server
+    await socket.ConnectAsync();
+    
+    // Listen for the "chat_response" event from the server
+    socket.On("chat_response", (response) =>
+    {
+        ChatResult chatResult = response.GetValue<ChatResult>();
+        OutputMessage += $", Response: {chatResult.Output}";
+        StateHasChanged(); // Update the UI
+    });
+    
+    // Emit the "configure" event to the server
+    var args = Arguments.ToArgsList();
+    var config = new { args, chat_binary = Arguments.ChatBinary };
+    await socket.EmitAsync("configure", config);
+
+    // Emit the "chat" event to the server with the initial input
+    await socket.EmitAsync("chat", new { input = Arguments.Prompt });
+}
+public async ValueTask DisposeAsync()
+{
+    if (socket != null)
+    {
+        await socket.DisconnectAsync();
+    }
+}
+
+    public class ConfigureResult
+    {
+        public string Status { get; set; }
+        public string Message { get; set; }
+        public List<string> Response { get; set; }
+    }
+    public class ChatResult
+    {
+        public string Output { get; set; }
+    }
+                
+    public class ChatArguments
+    {
+        public string ChatBinary { get; set; }
+        public string Model { get; set; }
+        public string Prompt { get; set; } 
+        public bool Interactive { get; set; }
+        public bool InteractiveStart { get; set; }
+        public bool Color { get; set; }
+        public string File { get; set; }
+        public int Seed { get; set; }
+        public int Threads { get; set; }
+        public int NPredict { get; set; }
+        public int TopK { get; set; }
+        public double TopP { get; set; }
+        public int RepeatLastN { get; set; }
+        public double RepeatPenalty { get; set; }
+        public int CtxSize { get; set; }        
+        public int ContextMemory { get; set; } 
+        public double Temp { get; set; }
+        public int BatchSize { get; set; }
+        public string ReversePrompt { get; set; }
+        public string Additional { get; set; }
+                
+        public List<string> ToArgsList()
+        {
+            var args = new List<string>();
+                
+            if (!string.IsNullOrEmpty(Model)) args.AddRange(new[] { "-m", Model });    
+            if (!string.IsNullOrEmpty(Prompt)) args.AddRange(new[] { "-p", Prompt });
+            if (Interactive) args.Add("-i");
+            if (InteractiveStart) args.Add("--interactive-start");
+            if (Color) args.Add("--color");
+            if (!string.IsNullOrEmpty(File)) args.AddRange(new[] { "-f", File });    
+            if (Seed != 0) args.AddRange(new[] { "-s", Seed.ToString() });
+            if (Threads != 0) args.AddRange(new[] { "-t", Threads.ToString() });
+            if (NPredict != 0) args.AddRange(new[] { "-n", NPredict.ToString() });
+            if (TopK != 0) args.AddRange(new[] { "--top_k", TopK.ToString() });
+            if (TopP != 0) args.AddRange(new[] { "--top_p", TopP.ToString() });
+            if (RepeatLastN != 0) args.AddRange(new[] { "--repeat_last_n", RepeatLastN.ToString() });
+            if (RepeatPenalty != 0) args.AddRange(new[] { "--repeat_penalty", RepeatPenalty.ToString() });
+            if (CtxSize != 0) args.AddRange(new[] { "-c", CtxSize.ToString() });
+            if (ContextMemory != 0) args.AddRange(new[] { "--context_memory", ContextMemory.ToString() });
+            if (Temp != 0) args.AddRange(new[] { "--temp", Temp.ToString() });
+            if (BatchSize != 0) args.AddRange(new[] { "-b", BatchSize.ToString() });
+            if (!string.IsNullOrEmpty(ReversePrompt)) args.AddRange(new[] { "-r", ReversePrompt });
+            
+            return args;
+        }
+    }
+  
+
+}
