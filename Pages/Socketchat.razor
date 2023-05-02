@@ -27,7 +27,7 @@
         Socket.On("ChatResult", async response =>
         {
             var message = response.GetValue<string>("output");
-            await InvokeAsync(() =>
+            await InvokeAsync(async () =>
             {
                 Messages.Add(message);
                 StateHasChanged();
