@@ -40,6 +40,10 @@ jobs:
     # Install OpenAI.NET
     - name: Install OpenAI.NET
       run: dotnet add package OpenAI
+      
+      # Install WebsocketManager.
+    - name: Install SocketIOClient
+      run: dotnet add package SocketIOClient
 
     # .Net Publish
     - name: Publish app
