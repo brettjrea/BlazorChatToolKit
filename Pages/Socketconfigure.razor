@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject ToggleSettingsService ToggleSettingsService
+@implements IDisposable
 
 
 <h2>ConfigureChatBinary</h2>
@@ -274,13 +275,14 @@ async Task ConfigureChatBinary()
     // Emit the "chat" event to the server with the initial input
     await socket.EmitAsync("chat", new { input = Arguments.Prompt });
 }
-public async ValueTask DisposeAsync()
-{
-    if (socket != null)
+public void Dispose()
     {
-        await socket.DisposeAsync();
+        if (socket != null)
+        {
+            socket.Dispose(); // Call Dispose() instead of DisposeAsync()
+        }
     }
-}
+
 
     public class ConfigureResult
     {
