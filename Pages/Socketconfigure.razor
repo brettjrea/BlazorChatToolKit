@@ -8,8 +8,6 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject ToggleSettingsService ToggleSettingsService
-@inject IAsyncDisposable
-
 
 
 <h2>ConfigureChatBinary</h2>
@@ -249,7 +247,7 @@ void ApplyToggles()
 
     string OutputMessage { get; set; } = "";
 
-    private SocketIO socket;
+    private SocketIOClient.SocketIO socket;
 
 async Task ConfigureChatBinary()
 {
