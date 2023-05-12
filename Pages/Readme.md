@@ -2,15 +2,17 @@
 
 BlazorChatToolKit is a Blazor chat application that demonstrates encrypted API Key storage in local storage and uses GPT-3 to generate text responses or images. The application allows users to choose between the Chat API, Completions API, and Image Generation API.
 
-## Index
+---
+
+#### Index
 
 The `Index` page in the Blazor application provides an overview of the Blazor Chat Tool Kit project.
 
-### Project Description
+##### Project Description
 
 BlazorChatToolKit is a project that aims to create a Blazor chat tool kit using GPT-3 to generate text responses, create a message list, and encrypt and store the API key in local storage. The project plans to integrate Dall-E image generation and other OpenAI endpoints in the future.
 
-### Guides and References
+##### Guides and References
 
 This project is a culmination of several guides, which are cited and referenced within the application:
 
@@ -18,12 +20,13 @@ This project is a culmination of several guides, which are cited and referenced 
 2. [Timmoth/blazor-npm-guide](https://github.com/Timmoth/blazor-npm-guide/tree/main) - A guide for using an npm package in a Blazor project.
 3. [mahdiit/blazor-wasm-encryptstorage](https://github.com/mahdiit/blazor-wasm-encryptstorage/tree/main) - A guide for encrypting and storing data in Blazor WebAssembly.
 
+---
 
-## Encryption
+#### Encryption
 
 The `Encryption` page in the Blazor application allows users to encrypt and decrypt data using the encryption provider. The implementation is based on the guide found at [mahdiit/blazor-wasm-encryptstorage](https://github.com/mahdiit/blazor-wasm-encryptstorage/tree/main).
 
-### User Interface
+##### User Interface
 
 The UI consists of several input fields, buttons, and labels. Users can enter text to be encrypted or decrypted and perform the following actions:
 
@@ -35,11 +38,11 @@ The UI consists of several input fields, buttons, and labels. Users can enter te
 - Store in Session and Local Storage
 - Read from Store
 
-### Code Behind
+##### Code Behind
 
 The `@code` block contains several properties and methods for managing encryption, decryption, and storage operations. The `IEncryptProvider` is injected for performing encryption and decryption, while `ISessionStorageService` and `ILocalStorageService` are injected for handling storage operations.
 
-#### Methods
+##### Methods
 
 - `DoClear`: Clears the input fields.
 - `DoEncrypt`: Encrypts the original text and updates the encrypted text field.
@@ -50,7 +53,7 @@ The `@code` block contains several properties and methods for managing encryptio
 - `ReadandDecrypt`: Reads the encrypted text from local storage, updates the encrypted text field, decrypts the encrypted text, and updates the original text field.
 
 
-## Conversation.razor
+#### Conversation.razor
 
 The `Conversation.razor` page is the main component of the BlazorChatToolKit. It contains a chat interface that allows users to interact with GPT-3 and see the generated responses. The main features of this page include:
 
@@ -67,11 +70,14 @@ The main functions in `Conversation.razor` are:
 - `GetImageFromDALLE`, `GetCompletions`, and `GetChat`: Handle the specific API calls to generate responses, images, or completions.
 
 By integrating this `Conversation.razor` page into your Blazor application, you can create an interactive chat experience where users can securely store their API Key and use GPT-3 to generate relevant responses or images based on their inputs.
-## Todo
+
+---
+
+#### Todo
 
 The `Todo` page demonstrates encrypted and decrypted todo storage in Local Storage and the use of GPT to generate todo suggestions. The page allows you to add, mark as done, and remove todos, which are encrypted and stored in the browser's local storage.
 
-### Interface and Functionality
+##### Interface and Functionality
 
 The interface consists of input fields and buttons to perform the following actions:
 
@@ -79,7 +85,7 @@ The interface consists of input fields and buttons to perform the following acti
 - **Mark as Done**: Check the box next to a todo to mark it as done.
 - **Remove Completed Todos**: Clicking the 'Remove Completed Todos' button removes all todos marked as done from the list and local storage.
 
-### Code
+##### Code
 
 The `Todo` component uses the `ISyncLocalStorageService` from Blazored.LocalStorage to interact with the web browser's local storage. The service's methods are used to set, get, and remove items, as well as to interact with the encrypted data. The `IEncryptProvider` is used to encrypt and decrypt the data stored in local storage.
 
@@ -89,12 +95,13 @@ The `GetTodoSuggestions` method is called when the user types in the input field
 
 The `RemoveCompletedTodos` method removes todos marked as done from the list and local storage.
 
+---
 
-## LocalChat
+#### LocalChat
 
 The `LocalChat` page in the Blazor application provides a simple chat interface where the user can interact with an AI chatbot.
 
-### Chat Interface
+##### Chat Interface
 
 The chat interface consists of an input field for entering messages, a send button to submit messages, and an output container displaying the conversation thread. The user messages and chatbot responses are displayed in different styles to easily distinguish between them.
 
@@ -108,28 +115,31 @@ The `LocalChat` component has the following properties and methods:
 
 The chatbot's response is obtained by making an HTTP POST request to a predefined API endpoint (e.g., `http://127.0.0.1:5000/chat`) with the user's message as the request data.
 
-### Styling
+##### Styling
 
 The component includes embedded CSS styles for the chat container, input field, send button, output container, conversation thread, and message elements.
 
+---
 
-## Configure Chat Binary
+##### Configure Chat Binary
 
 The `ConfigureChatBinary` page in the Blazor application allows users to configure various settings for the Chat Binary tool. The available settings include chat binary executable path, model path, input prompt, and other parameters related to generating chat output.
 
-### Form Inputs
+##### Form Inputs
 
 The form contains various input fields for each setting. The availability of these input fields is determined by the `ToggleSettingsService`, which provides toggle settings for each option. The values of these settings are bound to the properties of the `ChatArguments` class.
 
-### Configure Chat Binary Button
+##### Configure Chat Binary Button
 
 When the user clicks on the "Configure Chat Binary" button, the `ConfigureChatBinary` method is called. This method applies the toggle settings and sends the configuration to the API endpoint located at `http://localhost:5000/configure`. If the configuration is successful, the method sends an empty message to the chat endpoint to receive the initial output.
 
-### ChatArguments Class
+##### ChatArguments Class
 
 The `ChatArguments` class is used to store the values of the settings entered by the user. The `ToArgsList` method of this class converts these settings into a list of strings representing command-line arguments to be passed to the Chat Binary tool.
 
-## Highlight
+---
+
+#### Highlight
 
 The `Highlight` page in the Blazor application demonstrates how to use an npm package in a Blazor project. The implementation is based on the guide found at [Timmoth/blazor-npm-guide](https://github.com/Timmoth/blazor-npm-guide/tree/main).
 
@@ -141,7 +151,7 @@ The UI displays the guide's source and a code snippet with syntax highlighting.
 
 The `@code` block contains the `OnAfterRenderAsync` method, which is executed after the component has been rendered. The method checks if it is the first render of the component, and if so, it calls the JavaScript function `jslib.Highlight`.
 
-### JavaScript Interop
+##### JavaScript Interop
 
 The Blazor application communicates with the JavaScript `Highlight` function through JavaScript interop. The following code snippet shows the JavaScript function that imports and calls the `highlight` function from the npm package:
 
@@ -155,11 +165,13 @@ export function Highlight() {
 The highlight function is invoked in the OnAfterRenderAsync method of the Blazor component, as mentioned earlier.
 ```
 
-# Blazor Chat Toolkit - Toggle Settings
+---
+
+#### Toggle Settings
 
 This document provides an overview of the Toggle Settings section in the Blazor Chat Toolkit. The Toggle Settings page allows users to enable or disable various settings for the chat application.
 
-## Available Toggle Settings
+##### Available Toggle Settings
 
 1. Chat Binary
 2. Model
@@ -185,11 +197,13 @@ Each toggle switch controls a specific setting within the chat application, allo
 
 When you're finished adjusting the settings, the changes will take effect immediately, providing a tailored experience for each user.
 
-## Sync
+---
+
+#### Sync
 
 The `Sync` page demonstrates the use of Blazored's non-async LocalStorage service. This page allows you to add, read, remove, and clear items in the local storage of the web browser.
 
-### Interface and Functionality
+##### Interface and Functionality
 
 The interface consists of input fields and buttons to perform the following actions:
 
@@ -204,7 +218,7 @@ The page also displays the following information:
 - **Item exist in local storage**: This indicates whether an item with the key 'name' exists in local storage.
 - **String Read from local storage**: This shows the current string value stored in local storage with the key 'name'.
 
-### Code
+##### Code
 
 The `Sync` component uses the `ISyncLocalStorageService` from Blazored.LocalStorage to interact with the web browser's local storage. The service's methods are used to set, get, remove, and clear items, as well as to check the length of local storage and whether a specific key exists.
 
