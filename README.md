@@ -1,7 +1,8 @@
 # BlazorChatToolKit
 
-```
-# Blazor Chat Toolkit - `blazorchattoolkit.csproj`
+---
+
+##### blazorchattoolkit.csproj
 
 This section provides an overview of the `blazorchattoolkit.csproj` file in the Blazor Chat Toolkit project. This file is a project configuration file that contains information about the project, including target framework, property settings, and package references.
 
@@ -29,10 +30,10 @@ The project depends on several NuGet packages. The package references are:
 ## Service Worker
 
 The project includes a service worker, which is configured in the `wwwroot\service-worker.js` file. The published content is specified as `wwwroot\service-worker.published.js`.
-```
 
-```
-# Blazor Chat Toolkit - `Program.cs`
+---
+
+##### Program.cs
 
 This section provides an overview of the `Program.cs` file in the Blazor Chat Toolkit project. This file is the entry point for the application and is responsible for configuring the dependency injection container, setting up the root components, and starting the application.
 
@@ -94,13 +95,10 @@ Finally, the application is built and run asynchronously:
 ```csharp
 await builder.Build().RunAsync();
 ```
-```
-Here's an explanation of the `_Imports.razor` file:
 
-```
+---
 
-_Imports.razor
-```
+##### _Imports.razor
 
 This file contains all the global using directives for the Blazor application. By including these namespaces in `_Imports.razor`, you make them available for all components in the project, so you don't need to include them individually in each component file.
 
@@ -120,9 +118,10 @@ This file contains all the global using directives for the Blazor application. B
 - `@using OpenAI_API`, `@using OpenAI_API.Chat`, `@using OpenAI_API.Completions`, `@using OpenAI_API.Embedding`, and `@using OpenAI_API.Models`: Import namespaces related to the OpenAI API.
 
 In summary, `_Imports.razor` includes all the necessary namespaces for the BlazorChatToolKit project, making them available to all components in the application.
-```
-BlazorChatToolkit.sln
-```
+
+---
+
+##### BlazorChatToolkit.sln
 
 This is the solution file for the BlazorChatToolkit project. It contains information about the projects within the solution and their configurations.
 
@@ -137,9 +136,9 @@ This is the solution file for the BlazorChatToolkit project. It contains informa
 
 This file is used by Visual Studio to manage and build the solution, which includes the `BlazorChatToolKit.csproj` project file.
 
-```
-App.razor
-```
+---
+
+##### App.razor
 
 This file contains the main routing configuration for the Blazor application.
 
@@ -154,9 +153,9 @@ This file contains the main routing configuration for the Blazor application.
 
 In summary, `App.razor` sets up the routing for the Blazor application, specifying the layout to use and handling cases when no matching route is found.
 
-```
-AesJsProvider.cs
-```
+---
+
+##### AesJsProvider.cs
 
 This file defines the `AesJsProvider` class, which is an implementation of the `IEncryptProvider` interface. The purpose of this class is to provide encryption and decryption functionality for the BlazorChatToolKit application using JavaScript interop with the help of the `IJSRuntime` interface.
 
@@ -172,3 +171,6 @@ The `AesJsProvider` class has the following methods:
 4. `Decrypt<T>(string input)`: A generic asynchronous method that takes an encrypted JSON string as input, decrypts it using the `JsDecryptMethod`, and deserializes it into an object of type `T`.
 
 These methods use `try-catch` blocks to handle exceptions that might occur during the encryption and decryption processes, returning an empty string or a default value when an exception is caught. The class uses the `IJSRuntime` interface to invoke JavaScript functions for encryption and decryption.
+
+---
+
