@@ -2,11 +2,11 @@
 
 ---
 
-##### blazorchattoolkit.csproj
+#### blazorchattoolkit.csproj
 
 This section provides an overview of the `blazorchattoolkit.csproj` file in the Blazor Chat Toolkit project. This file is a project configuration file that contains information about the project, including target framework, property settings, and package references.
 
-## Project Configuration
+##### Project Configuration
 
 The project uses the following configuration:
 
@@ -15,7 +15,7 @@ The project uses the following configuration:
 - **ImplicitUsings**: enable
 - **ServiceWorkerAssetsManifest**: service-worker-assets.js
 
-## Package References
+##### Package References
 
 The project depends on several NuGet packages. The package references are:
 
@@ -27,17 +27,17 @@ The project depends on several NuGet packages. The package references are:
 6. OpenAI: Version 1.6.0
 7. System.Net.Http.Json: Version 7.0.1
 
-## Service Worker
+##### Service Worker
 
 The project includes a service worker, which is configured in the `wwwroot\service-worker.js` file. The published content is specified as `wwwroot\service-worker.published.js`.
 
 ---
 
-##### Program.cs
+#### Program.cs
 
 This section provides an overview of the `Program.cs` file in the Blazor Chat Toolkit project. This file is the entry point for the application and is responsible for configuring the dependency injection container, setting up the root components, and starting the application.
 
-## Dependencies
+##### Dependencies
 
 The `Program.cs` file imports several namespaces:
 
@@ -50,7 +50,7 @@ The `Program.cs` file imports several namespaces:
 - BlazorChatToolKit.Shared.EncryptProviders
 - System.Net.Http
 
-## Configuration
+##### Configuration
 
 The `WebAssemblyHostBuilder` is used to create the default configuration:
 
@@ -58,7 +58,7 @@ The `WebAssemblyHostBuilder` is used to create the default configuration:
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 ```
 
-## Root Components
+##### Root Components
 
 Two root components are added to the application:
 
@@ -70,7 +70,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 ```
 
-## Dependency Injection
+##### Dependency Injection
 
 The following services are registered with the dependency injection container:
 
@@ -88,7 +88,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddSingleton<ToggleSettingsService>();
 ```
 
-## Run the Application
+##### Run the Application
 
 Finally, the application is built and run asynchronously:
 
@@ -98,7 +98,7 @@ await builder.Build().RunAsync();
 
 ---
 
-##### _Imports.razor
+#### _Imports.razor
 
 This file contains all the global using directives for the Blazor application. By including these namespaces in `_Imports.razor`, you make them available for all components in the project, so you don't need to include them individually in each component file.
 
@@ -121,7 +121,7 @@ In summary, `_Imports.razor` includes all the necessary namespaces for the Blazo
 
 ---
 
-##### BlazorChatToolkit.sln
+#### BlazorChatToolkit.sln
 
 This is the solution file for the BlazorChatToolkit project. It contains information about the projects within the solution and their configurations.
 
@@ -138,7 +138,7 @@ This file is used by Visual Studio to manage and build the solution, which inclu
 
 ---
 
-##### App.razor
+#### App.razor
 
 This file contains the main routing configuration for the Blazor application.
 
@@ -155,7 +155,7 @@ In summary, `App.razor` sets up the routing for the Blazor application, specifyi
 
 ---
 
-##### AesJsProvider.cs
+#### AesJsProvider.cs
 
 This file defines the `AesJsProvider` class, which is an implementation of the `IEncryptProvider` interface. The purpose of this class is to provide encryption and decryption functionality for the BlazorChatToolKit application using JavaScript interop with the help of the `IJSRuntime` interface.
 
@@ -173,4 +173,3 @@ The `AesJsProvider` class has the following methods:
 These methods use `try-catch` blocks to handle exceptions that might occur during the encryption and decryption processes, returning an empty string or a default value when an exception is caught. The class uses the `IJSRuntime` interface to invoke JavaScript functions for encryption and decryption.
 
 ---
-
